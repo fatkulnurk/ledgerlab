@@ -131,24 +131,46 @@ evidenced** (a command, a file, or a screenshot in your submission).
       with agents that fit your workflow, and demonstrate them working.
 - [ ] See [`docs/SUBAGENTS.md`](docs/SUBAGENTS.md).
 
+### G9 — Infrastructure plan (required)
+
+- [ ] Produce `docs/INFRASTRUCTURE-PLAN.md` from the template: target topology,
+      environments, compute and scaling, data durability with **RPO/RTO and an
+      actually-performed restore drill**, networking/edge, secrets and identity,
+      CI/CD and rollback, observability with SLOs, a cost model with arithmetic,
+      failure modes, and at least three ADRs with rejected options.
+- [ ] Every section is specific and matches what is really deployed.
+- [ ] See [`docs/INFRASTRUCTURE-PLAN.md`](docs/INFRASTRUCTURE-PLAN.md).
+
+### G10 — Next-phase development plan (required)
+
+- [ ] Produce `docs/NEXT-PHASE-PLAN.md`: measurable outcomes tied to
+      stakeholders, a stated prioritisation method, three milestones with
+      testable exit criteria and dates, delivery capacity and the next hires,
+      technical workstreams, risks, metrics with sources, and what you are
+      explicitly deferring.
+- [ ] See [`docs/NEXT-PHASE-PLAN.md`](docs/NEXT-PHASE-PLAN.md).
+
 ---
 
 ## 3. Scoring rubric
 
 | #   | Criterion                         | Weight | What earns full marks                                                             |
 | --- | --------------------------------- | ------ | --------------------------------------------------------------------------------- |
-| 1   | **Correctness** — G0/G1           | 25     | Challenge suite green by fixing source; invariant proven by tests; no regressions |
-| 2   | **Engineering quality** — G1/G3   | 15     | Clean ports/adapters, migrations, typed boundaries, readable tests                |
-| 3   | **UI quality** — G2               | 15     | Design rules met; dashboard is clear and trustworthy                              |
-| 4   | **Production-scale** — G4         | 15     | Reproducible deploy, health checks, scaling, managed DB, pooling                  |
-| 5   | **Security** — G5                 | 15     | Secrets, CORS, internal-token boundary, headers, least privilege                  |
-| 6   | **AI prompt log** — G7            | 5      | Complete, honest, includes decisions and rejected suggestions                     |
-| 7   | **Sub-agents** — G8               | 5      | ≥3 agents, clearly scoped, demonstrably used                                      |
-| 8   | **Cloudflare + TLD** — G6 (bonus) | +5     | Real domain, proxied, Full (strict), WAF + rate limit, evidence                   |
-| 9   | **Extra credit**                  | +5     | Multi-currency reporting, audit trail, CSV/PDF export, OpenAPI, load test         |
+| 1   | **Correctness** — G0/G1           | 20     | Challenge suite green by fixing source; invariant proven by tests; no regressions |
+| 2   | **Engineering quality** — G1/G3   | 12     | Clean ports/adapters, migrations, typed boundaries, readable tests                |
+| 3   | **UI quality** — G2               | 12     | Design rules met; dashboard is clear and trustworthy                              |
+| 4   | **Production-scale deploy** — G4  | 12     | Reproducible deploy, health checks, scaling, managed DB, pooling                  |
+| 5   | **Security** — G5                 | 12     | Secrets, CORS, internal-token boundary, headers, least privilege                  |
+| 6   | **Infrastructure plan** — G9      | 12     | Specific, deployable-from-the-doc, tested restore, costed, ADR-backed             |
+| 7   | **Next-phase plan** — G10         | 10     | Outcomes, prioritisation method, milestones with exit criteria, capacity honesty  |
+| 8   | **AI prompt log** — G7            | 5      | Complete, honest, includes decisions and rejected suggestions                     |
+| 9   | **Sub-agents** — G8               | 5      | ≥3 agents, clearly scoped, demonstrably used                                      |
+| 10  | **Cloudflare + TLD** — G6 (bonus) | +5     | Real domain, proxied, Full (strict), WAF + rate limit, evidence                   |
+| 11  | **Extra credit**                  | +5     | Multi-currency reporting, audit trail, CSV/PDF export, OpenAPI, load test         |
 
 Automatic fail: tests edited to pass without fixing source; secrets committed;
-`CORS_ORIGINS=*` in production; fake AI log entries.
+`CORS_ORIGINS=*` in production; fake AI log entries; a plan document submitted
+with `TODO`s still in it.
 
 ---
 
@@ -203,7 +225,8 @@ packages/
 deployment/
   Dockerfile.*, nginx.conf, render.yaml
   aws/ gcp/ azure/ cloudflare/
-docs/                        Tasks, design, database, deployment, security, AI, sub-agents
+docs/                        Scenario, tasks, design, database, deployment, security, AI,
+                             sub-agents, infrastructure plan, next-phase plan, submission
 scripts/                     log-ai-prompt.mjs, verify-ai-log.mjs
 .opencode/agent/             Your sub-agents live here
 ```
@@ -328,7 +351,9 @@ Spec and definition of done: [`docs/SUBAGENTS.md`](docs/SUBAGENTS.md).
 2. Attach **deployed URLs** (dashboard + APIs) and `/health` responses.
 3. Include the **AI prompt log** (`docs/AI-PROMPT-LOG.md`) and your **sub-agent**
    definitions (`.opencode/agent/`).
-4. Add `docs/SUBMISSION.md` with: what you changed, what you skipped and why,
+4. Fill in both planning deliverables: **`docs/INFRASTRUCTURE-PLAN.md`** (G9) and
+   **`docs/NEXT-PHASE-PLAN.md`** (G10).
+5. Add `docs/SUBMISSION.md` with: what you changed, what you skipped and why,
    your deploy commands, Cloudflare/TLD evidence, and known limitations.
 
 **Suggested time budget:** 6–8 hours. G0 + G1 first (correctness), then G2,

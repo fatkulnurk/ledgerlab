@@ -122,7 +122,8 @@ blockquote p { margin: 0; }
       customers, an accountant about to review the books, and a bank partnership that hinges on a
       security review. This repository is their codebase. Fix the planted defects, remove the UI
       slop, move it onto a real database, harden it for production, and deploy it — with a logged AI
-      prompt trail and your own sub-agents.
+      prompt trail and your own sub-agents. Then write the infrastructure plan the bank needs and the
+      roadmap the investors want.
     </p>
     <dl class="cover-meta">
       <div><dt>Client scenario</dt><dd>Warung Books — micro-business bookkeeping</dd></div>
@@ -218,6 +219,22 @@ blockquote p { margin: 0; }
       </li>
 <li>
         <span class="num">10.</span>
+        <span class="toc-body">
+          <span class="toc-title">Infrastructure plan (template)</span>
+          <span class="toc-blurb">The scored deliverable: topology, durability, scaling, cost, DR and ADRs.</span>
+          <span class="toc-file mono">docs/INFRASTRUCTURE-PLAN.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">11.</span>
+        <span class="toc-body">
+          <span class="toc-title">Next-phase development plan (template)</span>
+          <span class="toc-blurb">The scored deliverable: outcomes, prioritisation, milestones and capacity.</span>
+          <span class="toc-file mono">docs/NEXT-PHASE-PLAN.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">12.</span>
         <span class="toc-body">
           <span class="toc-title">Submission template</span>
           <span class="toc-blurb">The fill-in-the-blanks document a reviewer reads first.</span>
@@ -398,6 +415,14 @@ accountant will trust — without breaking the 1,400 businesses already using it
 <tr>
 <td>Work in a way a future team can audit</td>
 <td><strong>G7, G8</strong></td>
+</tr>
+<tr>
+<td>Give the bank a plan they can approve, with tested backups and a costed path to 10×</td>
+<td><strong>G9</strong></td>
+</tr>
+<tr>
+<td>Give investors a credible plan for the phase after this one</td>
+<td><strong>G10</strong></td>
 </tr>
 </tbody></table>
 <h2>What &quot;good&quot; looks like</h2>
@@ -687,6 +712,25 @@ from API traffic.</li>
 with agents that fit your workflow, and demonstrate them working.</li>
 <li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/SUBAGENTS.md</code></a>.</li>
 </ul>
+<h3>G9 — Infrastructure plan (required)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Produce <code>docs/INFRASTRUCTURE-PLAN.md</code> from the template: target topology,
+environments, compute and scaling, data durability with <strong>RPO/RTO and an
+actually-performed restore drill</strong>, networking/edge, secrets and identity,
+CI/CD and rollback, observability with SLOs, a cost model with arithmetic,
+failure modes, and at least three ADRs with rejected options.</li>
+<li><input disabled="" type="checkbox"> Every section is specific and matches what is really deployed.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/INFRASTRUCTURE-PLAN.md</code></a>.</li>
+</ul>
+<h3>G10 — Next-phase development plan (required)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Produce <code>docs/NEXT-PHASE-PLAN.md</code>: measurable outcomes tied to
+stakeholders, a stated prioritisation method, three milestones with
+testable exit criteria and dates, delivery capacity and the next hires,
+technical workstreams, risks, metrics with sources, and what you are
+explicitly deferring.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/NEXT-PHASE-PLAN.md</code></a>.</li>
+</ul>
 <hr>
 <h2>3. Scoring rubric</h2>
 <table>
@@ -701,60 +745,73 @@ with agents that fit your workflow, and demonstrate them working.</li>
 <tbody><tr>
 <td>1</td>
 <td><strong>Correctness</strong> — G0/G1</td>
-<td>25</td>
+<td>20</td>
 <td>Challenge suite green by fixing source; invariant proven by tests; no regressions</td>
 </tr>
 <tr>
 <td>2</td>
 <td><strong>Engineering quality</strong> — G1/G3</td>
-<td>15</td>
+<td>12</td>
 <td>Clean ports/adapters, migrations, typed boundaries, readable tests</td>
 </tr>
 <tr>
 <td>3</td>
 <td><strong>UI quality</strong> — G2</td>
-<td>15</td>
+<td>12</td>
 <td>Design rules met; dashboard is clear and trustworthy</td>
 </tr>
 <tr>
 <td>4</td>
-<td><strong>Production-scale</strong> — G4</td>
-<td>15</td>
+<td><strong>Production-scale deploy</strong> — G4</td>
+<td>12</td>
 <td>Reproducible deploy, health checks, scaling, managed DB, pooling</td>
 </tr>
 <tr>
 <td>5</td>
 <td><strong>Security</strong> — G5</td>
-<td>15</td>
+<td>12</td>
 <td>Secrets, CORS, internal-token boundary, headers, least privilege</td>
 </tr>
 <tr>
 <td>6</td>
+<td><strong>Infrastructure plan</strong> — G9</td>
+<td>12</td>
+<td>Specific, deployable-from-the-doc, tested restore, costed, ADR-backed</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Next-phase plan</strong> — G10</td>
+<td>10</td>
+<td>Outcomes, prioritisation method, milestones with exit criteria, capacity honesty</td>
+</tr>
+<tr>
+<td>8</td>
 <td><strong>AI prompt log</strong> — G7</td>
 <td>5</td>
 <td>Complete, honest, includes decisions and rejected suggestions</td>
 </tr>
 <tr>
-<td>7</td>
+<td>9</td>
 <td><strong>Sub-agents</strong> — G8</td>
 <td>5</td>
 <td>≥3 agents, clearly scoped, demonstrably used</td>
 </tr>
 <tr>
-<td>8</td>
+<td>10</td>
 <td><strong>Cloudflare + TLD</strong> — G6 (bonus)</td>
 <td>+5</td>
 <td>Real domain, proxied, Full (strict), WAF + rate limit, evidence</td>
 </tr>
 <tr>
-<td>9</td>
+<td>11</td>
 <td><strong>Extra credit</strong></td>
 <td>+5</td>
 <td>Multi-currency reporting, audit trail, CSV/PDF export, OpenAPI, load test</td>
 </tr>
 </tbody></table>
 <p>Automatic fail: tests edited to pass without fixing source; secrets committed;
-<code>CORS_ORIGINS=*</code> in production; fake AI log entries.</p>
+<code>CORS_ORIGINS=*</code> in production; fake AI log entries; a plan document submitted
+with <code>TODO</code>s still in it.</p>
 <hr>
 <h2>4. Architecture</h2>
 <pre><code>                    ┌──────────────────────────┐
@@ -800,7 +857,8 @@ packages/
 deployment/
   Dockerfile.*, nginx.conf, render.yaml
   aws/ gcp/ azure/ cloudflare/
-docs/                        Tasks, design, database, deployment, security, AI, sub-agents
+docs/                        Scenario, tasks, design, database, deployment, security, AI,
+                             sub-agents, infrastructure plan, next-phase plan, submission
 scripts/                     log-ai-prompt.mjs, verify-ai-log.mjs
 .opencode/agent/             Your sub-agents live here
 </code></pre>
@@ -934,6 +992,8 @@ fails on missing or incomplete records. Full policy:
 <li>Attach <strong>deployed URLs</strong> (dashboard + APIs) and <code>/health</code> responses.</li>
 <li>Include the <strong>AI prompt log</strong> (<code>docs/AI-PROMPT-LOG.md</code>) and your <strong>sub-agent</strong>
 definitions (<code>.opencode/agent/</code>).</li>
+<li>Fill in both planning deliverables: <strong><code>docs/INFRASTRUCTURE-PLAN.md</code></strong> (G9) and
+<strong><code>docs/NEXT-PHASE-PLAN.md</code></strong> (G10).</li>
 <li>Add <code>docs/SUBMISSION.md</code> with: what you changed, what you skipped and why,
 your deploy commands, Cloudflare/TLD evidence, and known limitations.</li>
 </ol>
@@ -1018,6 +1078,27 @@ MySQL/SQLite are accepted if you implement the port.</li>
 <li><input disabled="" type="checkbox"> Rate limit on <code>/api/*</code>.</li>
 <li><input disabled="" type="checkbox"> Migrations run as a job/step, not at container start.</li>
 </ul>
+<h2>P2 — Infrastructure plan (G9)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Copy <a data-internal-link="true"><code>INFRASTRUCTURE-PLAN.md</code></a> to
+<code>docs/INFRASTRUCTURE-PLAN.md</code> and fill every section.</li>
+<li><input disabled="" type="checkbox"> Draw the target topology and make sure it matches what is actually deployed.</li>
+<li><input disabled="" type="checkbox"> State RPO/RTO and <strong>perform a restore drill</strong>; record the duration and result.</li>
+<li><input disabled="" type="checkbox"> Show the capacity arithmetic (requests/sec per replica, DB connections, storage growth).</li>
+<li><input disabled="" type="checkbox"> Cost the plan at 1× / 3× / 10× traffic and name what breaks first.</li>
+<li><input disabled="" type="checkbox"> Write ≥3 ADRs with genuinely rejected options.</li>
+<li><input disabled="" type="checkbox"> Verify the security controls table links to evidence, not intent.</li>
+</ul>
+<h2>P2 — Next-phase development plan (G10)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Copy <a data-internal-link="true"><code>NEXT-PHASE-PLAN.md</code></a> to
+<code>docs/NEXT-PHASE-PLAN.md</code> and fill every section.</li>
+<li><input disabled="" type="checkbox"> Define 3–5 measurable outcomes tied to a named stakeholder.</li>
+<li><input disabled="" type="checkbox"> Prioritise with a stated method (RICE or your own) and show the trade-offs.</li>
+<li><input disabled="" type="checkbox"> Three milestones with testable exit criteria, working back from bank go-live.</li>
+<li><input disabled="" type="checkbox"> Be honest about capacity; name the next two hires and why.</li>
+<li><input disabled="" type="checkbox"> List what you are explicitly deferring, with reasons.</li>
+</ul>
 <h2>P3 — Bonus (Cloudflare + TLD)</h2>
 <ul>
 <li><input disabled="" type="checkbox"> Custom domain on a real TLD, proxied through Cloudflare.</li>
@@ -1043,6 +1124,8 @@ currency or require an explicit FX rate.</li>
 <li><code>pnpm --filter @ledgerlab/ledger-api test:challenges</code> green.</li>
 <li><code>pnpm ai:verify</code> green and the log is honest.</li>
 <li>Deployed URL with <code>/health</code> returning <code>200</code>.</li>
+<li><code>docs/INFRASTRUCTURE-PLAN.md</code> filled in, with a performed restore drill.</li>
+<li><code>docs/NEXT-PHASE-PLAN.md</code> filled in, with milestones and exit criteria.</li>
 <li><code>docs/SUBMISSION.md</code> written: changes, decisions, evidence, limitations.</li>
 </ol>
 
@@ -1647,8 +1730,851 @@ The system prompt: scope, method, constraints, output contract.
   </section>
 
   <section class="doc" id="doc-10">
-    <p class="doc-kicker">Part 10 · <span class="mono">docs/SUBMISSION.md</span></p>
-    <h1>10. Submission template</h1>
+    <p class="doc-kicker">Part 10 · <span class="mono">docs/INFRASTRUCTURE-PLAN.md</span></p>
+    <h1>10. Infrastructure plan (template)</h1>
+    <blockquote>
+<p><strong>Deliverable.</strong> Fill this in and commit it as <code>docs/INFRASTRUCTURE-PLAN.md</code>.
+It is scored (G9) and the bank&#39;s reviewer will read it before they approve the
+embed. This file ships as a template — replace every <code>TODO</code> and delete the
+guidance you do not need.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Author</strong></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td><strong>Target environment</strong></td>
+<td>TODO (Render / AWS / GCP / Azure)</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Draft / Review / Approved</td>
+</tr>
+<tr>
+<td><strong>Related</strong></td>
+<td><a data-internal-link="true"><code>SECURITY.md</code></a>, <a data-internal-link="true"><code>DEPLOYMENT.md</code></a>, <a data-internal-link="true"><code>DATABASE.md</code></a></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>1. Executive summary</h2>
+<p>TODO — five bullets a non-engineer can read. State the target architecture, the
+durability guarantee, the cost, and what you deliberately did not build.</p>
+<ul>
+<li>Compute: …</li>
+<li>Data: …</li>
+<li>Edge: …</li>
+<li>Reliability target: … (availability, RPO, RTO)</li>
+<li>Cost: … per month at current traffic</li>
+</ul>
+<h2>2. Current vs target</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Today (vibe-coded)</th>
+<th>Target</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compute</td>
+<td>One VM, one process</td>
+<td>TODO</td>
+<td>Survive payday traffic</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>SQLite file, no backups</td>
+<td>TODO</td>
+<td>No total data loss</td>
+</tr>
+<tr>
+<td>Networking</td>
+<td>Public DB, <code>*</code> CORS</td>
+<td>TODO</td>
+<td>Bank review</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>Shared password in repo</td>
+<td>TODO</td>
+<td>Credential compromise</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td>None</td>
+<td>TODO</td>
+<td>Prove 99.9%</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Manual, on the box</td>
+<td>TODO</td>
+<td>Reproducible, rollback-able</td>
+</tr>
+</tbody></table>
+<h2>3. Architecture</h2>
+<p>TODO — one diagram (Mermaid or ASCII) of the target. Show: DNS/edge → load
+balancer → services → database, plus secret store, registry, and observability.
+Label the trust boundaries.</p>
+<pre><code class="language-mermaid">flowchart LR
+  U[Users] --&gt; CF[Cloudflare WAF/CDN]
+  CF --&gt; LB[Load balancer]
+  LB --&gt; W[web: static SPA]
+  LB --&gt; A[ledger-api]
+  LB --&gt; R[reporting-api]
+  A --&gt; DB[(PostgreSQL)]
+  R --&gt; A
+</code></pre>
+<h2>4. Environments</h2>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Purpose</th>
+<th>Data</th>
+<th>Access</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Local</td>
+<td>Developer</td>
+<td>In-memory or local PG</td>
+<td>Any</td>
+<td>Zero-config default</td>
+</tr>
+<tr>
+<td>Staging</td>
+<td>Pre-prod, migrations rehearsal</td>
+<td>Anonymised subset</td>
+<td>Team</td>
+<td>Same shape as prod</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>Customers</td>
+<td>Real</td>
+<td>Break-glass only</td>
+<td>Private networking</td>
+</tr>
+</tbody></table>
+<p>TODO — say how config differs per environment and how secrets are scoped. Do not
+share credentials across environments.</p>
+<h2>5. Compute, scaling and capacity</h2>
+<ul>
+<li>Service sizing (CPU/memory per service) and <strong>why</strong> (show the math in §13).</li>
+<li>Autoscaling policy: min/max replicas, the metric it scales on, and cooldowns.</li>
+<li>Concurrency and timeouts per service.</li>
+<li>Cold-start strategy (keep the ledger service warm; <code>min-instances ≥ 1</code>).</li>
+<li>Graceful shutdown: in-flight drain on SIGTERM (already wired — verify it).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>vCPU</th>
+<th>Memory</th>
+<th>Min</th>
+<th>Max</th>
+<th>Scale metric</th>
+<th>Timeout</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ledger-api</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>reporting-api</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>6. Data and durability</h2>
+<ul>
+<li>Engine, version, and why (see <a data-internal-link="true"><code>DATABASE.md</code></a>).</li>
+<li>HA / failover posture.</li>
+<li><strong>Backups</strong>: frequency, retention, encryption, cross-region?</li>
+<li><strong>Restore drill</strong>: date performed, duration, result. An untested backup is not
+a backup — asked for explicitly by the bank.</li>
+<li>Migration strategy: forward-only, one release of backward compatibility,
+applied as a deploy step (not on boot).</li>
+<li>Connection pooling: pool size, max idle, and how it maps to the DB plan.</li>
+<li>Data retention and PII minimisation.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Guarantee</th>
+<th>Value</th>
+<th>How it is met</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Recovery Point Objective (RPO)</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Recovery Time Objective (RTO)</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Backup frequency / retention</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Restore drill result</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>7. Networking, DNS, TLS and edge</h2>
+<ul>
+<li>DNS and domain (a real TLD, per G6).</li>
+<li>TLS termination points; certificate management and renewal.</li>
+<li>WAF, rate limiting, and bot controls (see <code>deployment/cloudflare/</code>).</li>
+<li>Private networking between services and DB; which ports are exposed.</li>
+<li>Egress rules and outbound dependencies.</li>
+</ul>
+<h2>8. Secrets and identity</h2>
+<ul>
+<li>Secret store and how each secret is injected (never baked into an image).</li>
+<li>Service identities / roles and their least-privilege policies.</li>
+<li>Rotation policy for <code>INTERNAL_API_TOKEN</code> and DB credentials.</li>
+<li>Who can read production secrets, and how that access is audited.</li>
+</ul>
+<h2>9. CI/CD and release</h2>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Trigger</th>
+<th>What runs</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PR</td>
+<td>push</td>
+<td>format, typecheck, test, ai:verify</td>
+<td>Required</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>merge to main</td>
+<td>image build, SBOM, tag</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Deploy staging</td>
+<td>tag</td>
+<td>migrate, deploy, smoke</td>
+<td>Manual</td>
+</tr>
+<tr>
+<td>Deploy prod</td>
+<td>approval</td>
+<td>migrate, canary/rolling, health check</td>
+<td>Manual</td>
+</tr>
+<tr>
+<td>Rollback</td>
+<td>on-call</td>
+<td>redeploy previous image</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>TODO — state the rollback procedure and the migration-compatibility rule.</p>
+<h2>10. Observability and SLOs</h2>
+<ul>
+<li>Logs: where, retention, structured fields.</li>
+<li>Metrics: the four golden signals per service.</li>
+<li>Traces: sampled? what is instrumented?</li>
+<li>SLOs: availability, p95 latency, error rate — with the alert thresholds and
+the <strong>error budget</strong> policy (what happens when it is spent).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>SLO</th>
+<th>Target</th>
+<th>Alert if</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Availability</td>
+<td>99.9%</td>
+<td>5xx &gt; 1% for 5 min</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Latency (ledger reads)</td>
+<td>p95 &lt; 300 ms</td>
+<td>p95 &gt; 300 ms for 10 min</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Freshness (reports)</td>
+<td>&lt; 60 s stale</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>11. Security controls</h2>
+<p>Map each control to the checklist in <a data-internal-link="true"><code>SECURITY.md</code></a>. Do not
+duplicate it — reference it and record the evidence location.</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Implemented</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>No secrets in git</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td><code>/api/internal/*</code> blocked at edge</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>CORS restricted</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>HSTS + secure headers</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Rate limiting on <code>/api/*</code></td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>DB least-privilege user</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>12. Cost model</h2>
+<p>Estimate monthly cost at <strong>current traffic (1×)</strong>, <strong>3×</strong> (the next phase), and
+<strong>10×</strong> (where the model breaks). Name the line items and the plan you chose.</p>
+<table>
+<thead>
+<tr>
+<th>Line item</th>
+<th>1×</th>
+<th>3×</th>
+<th>10×</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compute (services)</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td></td>
+</tr>
+<tr>
+<td>Database</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td></td>
+</tr>
+<tr>
+<td>Edge / CDN / WAF</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td></td>
+</tr>
+<tr>
+<td>Backups / storage</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td></td>
+</tr>
+<tr>
+<td>Observability</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Total / month</strong></td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>Also state: the <strong>first thing you would spend money on</strong> as traffic grows, and
+the metric that triggers it.</p>
+<h2>13. Failure modes and DR runbook</h2>
+<table>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Blast radius</th>
+<th>Detection</th>
+<th>Response</th>
+<th>Tested?</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Database unavailable</td>
+<td>All writes fail</td>
+<td>Health/alerts</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Ledger service crash-loop</td>
+<td>No posting</td>
+<td>Health check</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Bad migration</td>
+<td>Wrong data</td>
+<td>Canary + checks</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Region outage</td>
+<td>Everything</td>
+<td>Status page</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Secret rotation failure</td>
+<td>Auth broken</td>
+<td>401 spike</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<p>Include the capacity math you used (requests/sec per replica, DB connections
+needed, storage growth/month). Show the arithmetic.</p>
+<h2>14. Decision log (ADRs)</h2>
+<p>For each significant choice: <strong>context → options considered → decision → why →
+consequences.</strong> Minimum three. Example:</p>
+<blockquote>
+<p><strong>ADR-001 — Managed PostgreSQL over self-hosted.</strong> Considered self-managed
+Postgres on a VM, RDS/Cloud SQL/Flexible Server, and staying on SQLite.
+Chose managed because tested PITR backups and failover are requirements, and
+operating a database is not the client&#39;s differentiator. Consequence: higher
+unit cost, less control over extensions.</p>
+</blockquote>
+<hr>
+<h2>How this is scored (G9)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Every section is filled in with specifics, not adjectives.</li>
+<li><input disabled="" type="checkbox"> The diagram matches what is actually deployed (test it against reality).</li>
+<li><input disabled="" type="checkbox"> RPO/RTO are stated <strong>and</strong> a restore was actually performed.</li>
+<li><input disabled="" type="checkbox"> The cost model shows arithmetic and names the 10× breaking point.</li>
+<li><input disabled="" type="checkbox"> At least three ADRs with genuine rejected options.</li>
+<li><input disabled="" type="checkbox"> Controls reference <code>SECURITY.md</code> with evidence paths.</li>
+<li><input disabled="" type="checkbox"> A reviewer could rebuild the environment from this document alone.</li>
+</ul>
+
+  </section>
+
+  <section class="doc" id="doc-11">
+    <p class="doc-kicker">Part 11 · <span class="mono">docs/NEXT-PHASE-PLAN.md</span></p>
+    <h1>11. Next-phase development plan (template)</h1>
+    <blockquote>
+<p><strong>Deliverable.</strong> Fill this in and commit it as <code>docs/NEXT-PHASE-PLAN.md</code>.
+It is scored (G10). The seed investors will read it during due diligence, and
+Kira will use it to decide what to fund next. Replace every <code>TODO</code>.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Author</strong></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td><strong>Horizon</strong></td>
+<td>Next phase (e.g. 90 days)</td>
+</tr>
+<tr>
+<td><strong>Phase</strong></td>
+<td>Phase 2 — from &quot;trustworthy&quot; to &quot;growing&quot;</td>
+</tr>
+<tr>
+<td><strong>Related</strong></td>
+<td><a data-internal-link="true"><code>INFRASTRUCTURE-PLAN.md</code></a>, <a data-internal-link="true"><code>CLIENT-STORY.md</code></a></td>
+</tr>
+</tbody></table>
+<hr>
+<h2>1. Where we are</h2>
+<p>TODO — one short paragraph on the state <strong>after</strong> this engagement: correct
+ledger, real database, deployed and monitored, security review passing, X
+paying customers, current constraints.</p>
+<h2>2. Outcomes for this phase</h2>
+<p>Define 3–5 outcomes, not a feature list. Each has a <strong>measurable</strong> success
+signal and the stakeholder who cares.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Outcome</th>
+<th>Success signal</th>
+<th>For whom</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>O1</td>
+<td>Bank embed live for first cohort</td>
+<td>100 warungs approved for working capital</td>
+<td>Bank / Kira</td>
+</tr>
+<tr>
+<td>O2</td>
+<td>Books survive an audit</td>
+<td>CPA sign-off, zero unbalanced entries</td>
+<td>CPA</td>
+</tr>
+<tr>
+<td>O3</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>O4</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<p>Candidate outcomes to consider (pick, don&#39;t sprawl): authentication and
+multi-tenancy, an append-only audit trail, multi-currency, bank API
+integration, mobile capture, statement import, accountant collaboration.</p>
+<h2>3. Prioritisation</h2>
+<p>Score the candidate work. Use RICE (Reach × Impact × Confidence ÷ Effort) or
+state your own method. The <strong>method</strong> matters more than the exact numbers.</p>
+<table>
+<thead>
+<tr>
+<th>Initiative</th>
+<th>Reach</th>
+<th>Impact</th>
+<th>Confidence</th>
+<th>Effort</th>
+<th>Score</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Auth + tenant scoping</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>Now</td>
+</tr>
+<tr>
+<td>Audit trail</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>Now</td>
+</tr>
+<tr>
+<td>Multi-currency</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>Next</td>
+</tr>
+<tr>
+<td>Bank ledger export API</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>Now</td>
+</tr>
+<tr>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>Later</td>
+</tr>
+</tbody></table>
+<p>TODO — note what you are explicitly <strong>not</strong> doing and why. Saying no is part of
+the plan.</p>
+<h2>4. Milestones</h2>
+<p>Three milestones, each with <strong>exit criteria</strong> that are testable, and a date.
+Work backward from the bank go-live.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Window</th>
+<th>Contents</th>
+<th>Exit criteria</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>M1 — Harden</td>
+<td>Weeks 1–4</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>M2 — Embed</td>
+<td>Weeks 5–8</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>M3 — Scale</td>
+<td>Weeks 9–13</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>5. Delivery plan</h2>
+<ul>
+<li><strong>Capacity:</strong> who does the work (you? a new hire?) and how much of their time.</li>
+<li><strong>Team shape:</strong> the next two hires and why, in priority order.</li>
+<li><strong>Dependencies:</strong> external teams (the bank, the CPA), and their lead times.</li>
+<li><strong>Cadence:</strong> release rhythm, demo schedule, stakeholder updates.</li>
+<li><strong>Definition of done</strong> for a work item on this team.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Needed by</th>
+<th>Why</th>
+<th>Cost signal</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>6. Technical workstreams</h2>
+<p>Map each workstream to the infrastructure plan and the current codebase. Name the
+files/services that will change.</p>
+<table>
+<thead>
+<tr>
+<th>Workstream</th>
+<th>Depends on</th>
+<th>First PR</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Authentication + tenancy</td>
+<td>—</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Append-only audit log</td>
+<td>DB schema</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Multi-currency reporting</td>
+<td><code>packages/shared/reporting</code></td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Bank export API</td>
+<td>Infra plan §7</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>7. Risks and mitigations</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bank review slips</td>
+<td>TODO</td>
+<td>High</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Schema migration on live money data</td>
+<td>TODO</td>
+<td>High</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Single engineer bus factor</td>
+<td>TODO</td>
+<td>High</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>8. Metrics</h2>
+<p>The numbers this phase must move, with current values and targets.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Now</th>
+<th>Target</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Weekly active businesses</td>
+<td>1,400</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>% entries posted without support contact</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>p95 ledger latency</td>
+<td>TODO</td>
+<td>&lt; 300 ms</td>
+<td>Monitoring</td>
+</tr>
+<tr>
+<td>Availability</td>
+<td>TODO</td>
+<td>99.9%</td>
+<td>Monitoring</td>
+</tr>
+<tr>
+<td>Support tickets / 100 businesses</td>
+<td>TODO</td>
+<td>TODO</td>
+<td>Helpdesk</td>
+</tr>
+</tbody></table>
+<h2>9. Explicitly deferred</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Why deferred</th>
+<th>Revisit when</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spanish/English localisation</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Native mobile app</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Real-time collaborative editing</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<h2>10. Decision log</h2>
+<p>At least two ADRs for phase-shaping decisions (e.g. &quot;build auth vs buy an
+identity provider&quot;). Context → options → decision → consequences.</p>
+<hr>
+<h2>How this is scored (G10)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Outcomes are measurable and tied to a named stakeholder.</li>
+<li><input disabled="" type="checkbox"> Prioritisation uses a stated method with real trade-offs, not vibes.</li>
+<li><input disabled="" type="checkbox"> Milestones have testable exit criteria and dates that work backward from
+the bank go-live.</li>
+<li><input disabled="" type="checkbox"> The plan is honest about capacity (one engineer) and names the next hires.</li>
+<li><input disabled="" type="checkbox"> It says no to things, with reasons.</li>
+<li><input disabled="" type="checkbox"> Metrics have a source of truth, not guesses.</li>
+<li><input disabled="" type="checkbox"> It is a plan to <em>learn</em>, not a wish list of features.</li>
+</ul>
+
+  </section>
+
+  <section class="doc" id="doc-12">
+    <p class="doc-kicker">Part 12 · <span class="mono">docs/SUBMISSION.md</span></p>
+    <h1>12. Submission template</h1>
     <blockquote>
 <p>Fill this in. Replace every <code>TODO</code>. Reviewers read this first.</p>
 </blockquote>
@@ -1722,6 +2648,25 @@ The system prompt: scope, method, constraints, output contract.
 <li>WAF rule and rate-limit rule: TODO (paste the expression)</li>
 <li><code>/api/internal/*</code> blocked at edge: TODO (evidence)</li>
 <li>Cache rules: TODO</li>
+</ul>
+<h2>Infrastructure plan (G9)</h2>
+<ul>
+<li>Document: <code>docs/INFRASTRUCTURE-PLAN.md</code> — TODO (status: complete / partial)</li>
+<li>Topology summary in one sentence: TODO</li>
+<li>RPO / RTO: TODO</li>
+<li>Restore drill: date TODO, duration TODO, result TODO</li>
+<li>Cost at 1× / 3× / 10×: TODO</li>
+<li>First bottleneck at 10×: TODO</li>
+<li>ADRs: TODO (list the decisions)</li>
+</ul>
+<h2>Next-phase plan (G10)</h2>
+<ul>
+<li>Document: <code>docs/NEXT-PHASE-PLAN.md</code> — TODO (status: complete / partial)</li>
+<li>Outcomes: TODO (list the 3–5)</li>
+<li>Prioritisation method and top initiative: TODO</li>
+<li>Milestones + exit criteria: TODO</li>
+<li>Next hires: TODO</li>
+<li>Explicitly deferred: TODO</li>
 </ul>
 <h2>AI usage</h2>
 <ul>

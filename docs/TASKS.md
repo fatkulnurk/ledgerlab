@@ -64,6 +64,27 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] Rate limit on `/api/*`.
 - [ ] Migrations run as a job/step, not at container start.
 
+## P2 — Infrastructure plan (G9)
+
+- [ ] Copy [`INFRASTRUCTURE-PLAN.md`](INFRASTRUCTURE-PLAN.md) to
+      `docs/INFRASTRUCTURE-PLAN.md` and fill every section.
+- [ ] Draw the target topology and make sure it matches what is actually deployed.
+- [ ] State RPO/RTO and **perform a restore drill**; record the duration and result.
+- [ ] Show the capacity arithmetic (requests/sec per replica, DB connections, storage growth).
+- [ ] Cost the plan at 1× / 3× / 10× traffic and name what breaks first.
+- [ ] Write ≥3 ADRs with genuinely rejected options.
+- [ ] Verify the security controls table links to evidence, not intent.
+
+## P2 — Next-phase development plan (G10)
+
+- [ ] Copy [`NEXT-PHASE-PLAN.md`](NEXT-PHASE-PLAN.md) to
+      `docs/NEXT-PHASE-PLAN.md` and fill every section.
+- [ ] Define 3–5 measurable outcomes tied to a named stakeholder.
+- [ ] Prioritise with a stated method (RICE or your own) and show the trade-offs.
+- [ ] Three milestones with testable exit criteria, working back from bank go-live.
+- [ ] Be honest about capacity; name the next two hires and why.
+- [ ] List what you are explicitly deferring, with reasons.
+
 ## P3 — Bonus (Cloudflare + TLD)
 
 - [ ] Custom domain on a real TLD, proxied through Cloudflare.
@@ -90,4 +111,6 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 2. `pnpm --filter @ledgerlab/ledger-api test:challenges` green.
 3. `pnpm ai:verify` green and the log is honest.
 4. Deployed URL with `/health` returning `200`.
-5. `docs/SUBMISSION.md` written: changes, decisions, evidence, limitations.
+5. `docs/INFRASTRUCTURE-PLAN.md` filled in, with a performed restore drill.
+6. `docs/NEXT-PHASE-PLAN.md` filled in, with milestones and exit criteria.
+7. `docs/SUBMISSION.md` written: changes, decisions, evidence, limitations.

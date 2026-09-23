@@ -77,15 +77,17 @@ accountant will trust — without breaking the 1,400 businesses already using it
 
 That is exactly this repository's goals:
 
-| Mandate                                                              | Goal       |
-| -------------------------------------------------------------------- | ---------- |
-| Fix the defects the accountant will find                             | **G0, G1** |
-| Make the money UI trustworthy                                        | **G2**     |
-| Move off a single in-memory/file store to a real, backed-up database | **G3**     |
-| Survive payday traffic; deploy reproducibly                          | **G4**     |
-| Pass the bank's security questionnaire                               | **G5**     |
-| A domain and edge the bank recognises                                | **G6**     |
-| Work in a way a future team can audit                                | **G7, G8** |
+| Mandate                                                                             | Goal       |
+| ----------------------------------------------------------------------------------- | ---------- |
+| Fix the defects the accountant will find                                            | **G0, G1** |
+| Make the money UI trustworthy                                                       | **G2**     |
+| Move off a single in-memory/file store to a real, backed-up database                | **G3**     |
+| Survive payday traffic; deploy reproducibly                                         | **G4**     |
+| Pass the bank's security questionnaire                                              | **G5**     |
+| A domain and edge the bank recognises                                               | **G6**     |
+| Work in a way a future team can audit                                               | **G7, G8** |
+| Give the bank a plan they can approve, with tested backups and a costed path to 10× | **G9**     |
+| Give investors a credible plan for the phase after this one                         | **G10**    |
 
 ## What "good" looks like
 

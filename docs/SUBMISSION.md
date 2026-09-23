@@ -62,6 +62,25 @@ pnpm --filter @ledgerlab/ledger-api test:challenges
 - `/api/internal/*` blocked at edge: TODO (evidence)
 - Cache rules: TODO
 
+## Infrastructure plan (G9)
+
+- Document: `docs/INFRASTRUCTURE-PLAN.md` — TODO (status: complete / partial)
+- Topology summary in one sentence: TODO
+- RPO / RTO: TODO
+- Restore drill: date TODO, duration TODO, result TODO
+- Cost at 1× / 3× / 10×: TODO
+- First bottleneck at 10×: TODO
+- ADRs: TODO (list the decisions)
+
+## Next-phase plan (G10)
+
+- Document: `docs/NEXT-PHASE-PLAN.md` — TODO (status: complete / partial)
+- Outcomes: TODO (list the 3–5)
+- Prioritisation method and top initiative: TODO
+- Milestones + exit criteria: TODO
+- Next hires: TODO
+- Explicitly deferred: TODO
+
 ## AI usage
 
 - Entries in `docs/ai/prompt-log.jsonl`: TODO (count)

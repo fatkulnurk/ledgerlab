@@ -83,6 +83,16 @@ const SECTIONS = [
     blurb: "Build at least three sub-agents and one of your own; scope and contracts.",
   },
   {
+    file: "docs/INFRASTRUCTURE-PLAN.md",
+    title: "Infrastructure plan (template)",
+    blurb: "The scored deliverable: topology, durability, scaling, cost, DR and ADRs.",
+  },
+  {
+    file: "docs/NEXT-PHASE-PLAN.md",
+    title: "Next-phase development plan (template)",
+    blurb: "The scored deliverable: outcomes, prioritisation, milestones and capacity.",
+  },
+  {
     file: "docs/SUBMISSION.md",
     title: "Submission template",
     blurb: "The fill-in-the-blanks document a reviewer reads first.",
@@ -144,7 +154,8 @@ const COVER = `
       customers, an accountant about to review the books, and a bank partnership that hinges on a
       security review. This repository is their codebase. Fix the planted defects, remove the UI
       slop, move it onto a real database, harden it for production, and deploy it — with a logged AI
-      prompt trail and your own sub-agents.
+      prompt trail and your own sub-agents. Then write the infrastructure plan the bank needs and the
+      roadmap the investors want.
     </p>
     <dl class="cover-meta">
       <div><dt>Client scenario</dt><dd>Warung Books — micro-business bookkeeping</dd></div>
