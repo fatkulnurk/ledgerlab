@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>LedgerLab — Technical Test Candidate Guide</title>
+<style>
+@page { size: A4; margin: 20mm 16mm; }
+:root {
+  --ink: #18181b;
+  --muted: #52525b;
+  --faint: #a1a1aa;
+  --line: #e4e4e7;
+  --accent: #4f46e5;
+  --ok: #047857;
+  --bad: #b91c1c;
+}
+* { box-sizing: border-box; }
+html { font-size: 10.5pt; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+code, pre, .mono { font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace; }
+
+/* --- cover --- */
+.cover {
+  height: 247mm; /* one page within 20mm margins on A4 (297mm) */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 4mm;
+  break-after: page;
+}
+.cover-top { display: flex; align-items: baseline; gap: 10px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; }
+.brand { font-size: 15pt; font-weight: 700; letter-spacing: -0.01em; }
+.brand-sub { font-size: 9pt; color: var(--muted); }
+.cover-title { font-size: 34pt; line-height: 1.06; letter-spacing: -0.02em; margin: 48px 0 18px; font-weight: 700; }
+.cover-lede { font-size: 12pt; color: var(--muted); max-width: 128mm; margin: 0 0 34px; }
+.cover-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 26px; margin: 0 0 34px; border-top: 1px solid var(--line); padding-top: 22px; }
+.cover-meta div { display: flex; flex-direction: column; gap: 1px; }
+.cover-meta dt { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.07em; color: var(--faint); }
+.cover-meta dd { margin: 0; font-size: 10.5pt; font-weight: 500; }
+.cover-callout { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 2px; padding: 12px 14px; font-size: 10pt; color: var(--muted); }
+.cover-callout strong { color: var(--ink); }
+.cover-callout code { background: #f4f4f5; padding: 1px 4px; border-radius: 3px; font-size: 9pt; }
+
+/* --- table of contents --- */
+.toc { break-after: page; }
+.toc h2 { font-size: 15pt; margin: 0 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+.toc-list { list-style: none; margin: 0; padding: 0; }
+.toc-list li { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.toc .num { color: var(--accent); font-weight: 600; min-width: 18px; font-variant-numeric: tabular-nums; }
+.toc-body { display: flex; flex-direction: column; gap: 1px; }
+.toc-title { font-size: 11pt; font-weight: 600; }
+.toc-blurb { font-size: 9.5pt; color: var(--muted); }
+.toc-file { font-size: 8.5pt; color: var(--faint); }
+
+/* --- sections --- */
+.doc { break-before: page; }
+.doc-kicker { font-size: 8.5pt; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 6px; }
+h1 { font-size: 20pt; letter-spacing: -0.015em; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+h2 { font-size: 13.5pt; margin: 22px 0 8px; letter-spacing: -0.01em; }
+h3 { font-size: 11.5pt; margin: 16px 0 6px; }
+h1, h2, h3, h4 { break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+a { color: var(--accent); text-decoration: none; }
+[data-internal-link] { color: var(--ink); }
+
+ul, ol { margin: 8px 0; padding-left: 20px; }
+li { margin: 3px 0; }
+li > p { margin: 3px 0; }
+strong { font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
+
+/* GFM task lists */
+li input[type="checkbox"] { width: 10px; height: 10px; margin-right: 6px; accent-color: var(--accent); }
+
+/* code */
+code { background: #f4f4f5; padding: 1px 4px; border-radius: 3px; font-size: 9pt; }
+pre {
+  background: #fafafa;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  break-inside: avoid;
+  font-size: 8.6pt;
+  line-height: 1.45;
+}
+pre code { background: none; padding: 0; font-size: 8.6pt; }
+
+/* tables */
+table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 9.3pt; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: #f4f4f5; font-weight: 600; font-size: 8.6pt; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); border-bottom: 1px solid var(--faint); }
+td code { font-size: 8.6pt; }
+
+blockquote { margin: 12px 0; padding: 8px 12px; border-left: 3px solid var(--faint); background: #fafafa; color: var(--muted); }
+blockquote p { margin: 0; }
+
+/* emoji status markers stay legible but small */
+.doc { font-variant-ligatures: none; }
+</style>
+</head>
+<body>
+
+  <section class="cover">
+    <div class="cover-top">
+      <span class="brand">LedgerLab</span>
+      <span class="brand-sub">Double-entry accounting platform</span>
+    </div>
+    <h1 class="cover-title">Technical Test<br />Candidate Guide</h1>
+    <p class="cover-lede">
+      A double-entry accounting scaffold: a React dashboard, a ledger API, a reporting API,
+      and a shared domain. Fix the planted defects, remove the UI slop, harden it for
+      production, and deploy it — with a logged AI prompt trail and your own sub-agents.
+    </p>
+    <dl class="cover-meta">
+      <div><dt>Document</dt><dd>Candidate guide</dd></div>
+      <div><dt>Repository</dt><dd>technical-test-microservice</dd></div>
+      <div><dt>Scaffold version</dt><dd>0.1.0</dd></div>
+      <div><dt>Generated</dt><dd>2026-09-23</dd></div>
+      <div><dt>Suggested time</dt><dd>6–8 hours</dd></div>
+      <div><dt>Stack</dt><dd>TypeScript · Node · Hono · React · PostgreSQL</dd></div>
+    </dl>
+    <div class="cover-callout">
+      <strong>Start here.</strong> Run <code>pnpm install</code>, then
+      <code>pnpm test</code> (green) and
+      <code>pnpm --filter @ledgerlab/ledger-api test:challenges</code> (red on purpose).
+      The red suite is your first task.
+    </div>
+  </section>
+<section class="toc">
+    <h2>Contents</h2>
+    <ol class="toc-list">
+      <li>
+        <span class="num">1.</span>
+        <span class="toc-body">
+          <span class="toc-title">Overview, goals and scoring</span>
+          <span class="toc-blurb">What the scaffold is, goals G0–G8, the rubric and the submission checklist.</span>
+          <span class="toc-file mono">README.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">2.</span>
+        <span class="toc-body">
+          <span class="toc-title">Task backlog</span>
+          <span class="toc-blurb">Ordered P0–P3 work: fix the defects, then quality, database, deploy and security.</span>
+          <span class="toc-file mono">docs/TASKS.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">3.</span>
+        <span class="toc-body">
+          <span class="toc-title">Design rules (anti-slop)</span>
+          <span class="toc-blurb">The enforced UI rules: colour balance, icons, typography, surfaces, motion.</span>
+          <span class="toc-file mono">docs/DESIGN.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">4.</span>
+        <span class="toc-body">
+          <span class="toc-title">Database</span>
+          <span class="toc-blurb">The storage port, PostgreSQL wiring, and MySQL/SQLite/SQL Server options.</span>
+          <span class="toc-file mono">docs/DATABASE.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">5.</span>
+        <span class="toc-body">
+          <span class="toc-title">Deployment</span>
+          <span class="toc-blurb">Render/AWS/GCP/Azure runbooks and the definition of production-scale.</span>
+          <span class="toc-file mono">docs/DEPLOYMENT.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">6.</span>
+        <span class="toc-body">
+          <span class="toc-title">Security</span>
+          <span class="toc-blurb">Secrets, the service-to-service boundary, CORS, headers and rate limiting.</span>
+          <span class="toc-file mono">docs/SECURITY.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">7.</span>
+        <span class="toc-body">
+          <span class="toc-title">AI usage policy</span>
+          <span class="toc-blurb">How to log every AI prompt and what is scored; includes rejected prompts.</span>
+          <span class="toc-file mono">docs/AI-USAGE.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">8.</span>
+        <span class="toc-body">
+          <span class="toc-title">Sub-agents</span>
+          <span class="toc-blurb">Build at least three sub-agents and one of your own; scope and contracts.</span>
+          <span class="toc-file mono">docs/SUBAGENTS.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">9.</span>
+        <span class="toc-body">
+          <span class="toc-title">Submission template</span>
+          <span class="toc-blurb">The fill-in-the-blanks document a reviewer reads first.</span>
+          <span class="toc-file mono">docs/SUBMISSION.md</span>
+        </span>
+      </li>
+    </ol>
+  </section>
+
+  <section class="doc" id="doc-1">
+    <p class="doc-kicker">Part 1 · <span class="mono">README.md</span></p>
+    <h1>1. Overview, goals and scoring</h1>
+    <p>A <strong>double-entry accounting</strong> scaffold: a React dashboard, a <strong>ledger API</strong>, a
+<strong>reporting API</strong>, and shared domain packages in a pnpm/Turborepo monorepo.</p>
+<p>Your job is <strong>not</strong> to build a finished product. It is to take this scaffold,
+<strong>fix its intentional defects, remove the UI slop, harden it for production, and
+deploy it</strong> — while logging every AI prompt you use and building your own
+sub-agents to do the work.</p>
+<blockquote>
+<p>Read this file end to end before writing code. Then read
+<a data-internal-link="true"><code>docs/TASKS.md</code></a> for the ordered backlog.</p>
+</blockquote>
+<hr>
+<h2>1. What already works</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Monorepo (pnpm workspaces + Turborepo)</td>
+<td>✅ builds, typechecks, tests</td>
+</tr>
+<tr>
+<td>Double-entry domain (integer minor units, signed amounts)</td>
+<td>✅ with unit tests</td>
+</tr>
+<tr>
+<td>Ledger API: accounts, journal entries, trial balance, void</td>
+<td>✅ tested</td>
+</tr>
+<tr>
+<td>Reporting API: dashboard, income statement, balance sheet</td>
+<td>✅ tested</td>
+</tr>
+<tr>
+<td>Postgres adapter (Drizzle) + in-memory adapter</td>
+<td>✅ same port</td>
+</tr>
+<tr>
+<td>Dashboard: dashboard, ledger, new entry, accounts, reports</td>
+<td>⚠️ functional, needs review</td>
+</tr>
+<tr>
+<td>Dockerfiles + Render blueprint + AWS/GCP/Azure/Cloudflare notes</td>
+<td>✅ present</td>
+</tr>
+<tr>
+<td><strong>Challenge suite (2 failing specs that define required fixes)</strong></td>
+<td>❌ <strong>red on purpose</strong></td>
+</tr>
+</tbody></table>
+<p>Run the default suite and everything is green. Run the challenge suite and you
+will see exactly what is broken:</p>
+<pre><code class="language-bash">pnpm install
+pnpm test                                  # green
+pnpm --filter @ledgerlab/ledger-api test:challenges   # red — this is the work
+</code></pre>
+<hr>
+<h2>2. Goals</h2>
+<p>Each goal has acceptance criteria. &quot;Done&quot; means the criteria are met <strong>and
+evidenced</strong> (a command, a file, or a screenshot in your submission).</p>
+<h3>G0 — Fix the errors (highest priority)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Make <code>pnpm --filter @ledgerlab/ledger-api test:challenges</code> green by fixing
+the <strong>source</strong>, not the tests. The two defects are documented in
+<a data-internal-link="true"><code>apps/ledger-api/src/challenges/</code></a>.</li>
+<li><input disabled="" type="checkbox"> <code>pnpm typecheck &amp;&amp; pnpm test &amp;&amp; pnpm build</code> all pass on a clean checkout.</li>
+<li><input disabled="" type="checkbox"> No <code>TODO(candidate)</code> left unresolved in code paths you claim are finished.</li>
+</ul>
+<h3>G1 — Finish the core ledger</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Every mutation path preserves the invariant: <strong>sum of signed minor units
+=== 0</strong> for each entry.</li>
+<li><input disabled="" type="checkbox"> Voiding is a guarded <code>POSTED → VOID</code> transition (no re-voiding).</li>
+<li><input disabled="" type="checkbox"> Trial balance, income statement, and balance sheet are correct for any
+<code>asOf</code> / date range.</li>
+<li><input disabled="" type="checkbox"> Tests cover each rule; each new test would fail if the rule broke.</li>
+</ul>
+<h3>G2 — Un-slop the UI</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Dashboard reads as a product, not a template: clear hierarchy, one accent
+colour, no decorative icon boxes, no emojis, no gradients/glassmorphism.</li>
+<li><input disabled="" type="checkbox"> Money is right-aligned and uses tabular figures; empty and error states
+are designed, not default.</li>
+<li><input disabled="" type="checkbox"> Follow <a data-internal-link="true"><code>docs/DESIGN.md</code></a> (the enforced design rules).</li>
+</ul>
+<h3>G3 — Real database (required)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> The ledger runs against a <strong>real database</strong>, not the in-memory adapter.
+PostgreSQL is wired up; <strong>MySQL, MariaDB, SQLite/libSQL, or SQL Server are
+acceptable</strong> if you implement the <code>LedgerRepository</code> port.</li>
+<li><input disabled="" type="checkbox"> Schema is migrated (not auto-synced) and seeded via a repeatable script.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/DATABASE.md</code></a>.</li>
+</ul>
+<h3>G4 — Production-scale deployment</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Deployed to <strong>at least one</strong> of Render / AWS / GCP / Azure, reachable over
+HTTPS, with <code>/health</code> monitored.</li>
+<li><input disabled="" type="checkbox"> Stateless services, ≥2 replicas (or <code>min-instances ≥ 1</code>), managed database,
+connection pooling, graceful shutdown.</li>
+<li><input disabled="" type="checkbox"> A <strong>one-command</strong> reproducible deploy is documented and was actually run.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/DEPLOYMENT.md</code></a>.</li>
+</ul>
+<h3>G5 — Security-aware hardening</h3>
+<ul>
+<li><input disabled="" type="checkbox"> No secrets in git; all from the platform secret store.</li>
+<li><input disabled="" type="checkbox"> <code>INTERNAL_API_TOKEN</code> set and <code>/api/internal/*</code> unreachable from the public
+internet.</li>
+<li><input disabled="" type="checkbox"> <code>CORS_ORIGINS</code> restricted to the real dashboard origin (never <code>*</code> in prod).</li>
+<li><input disabled="" type="checkbox"> HTTPS/HSTS, secure headers, least-privilege DB user, no stack traces in
+API error bodies, rate limiting in front of <code>/api/*</code>.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/SECURITY.md</code></a>.</li>
+</ul>
+<h3>G6 — Cloudflare + custom TLD domain (scored bonus)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> A <strong>real TLD</strong> you control (not <code>*.onrender.com</code> / <code>*.run.app</code>).</li>
+<li><input disabled="" type="checkbox"> Cloudflare proxying, TLS <strong>Full (strict)</strong>, WAF managed rules, and a
+rate-limit rule on <code>/api/*</code>.</li>
+<li><input disabled="" type="checkbox"> <code>/api/internal/*</code> blocked at the edge; cache rules separate static assets
+from API traffic.</li>
+<li><input disabled="" type="checkbox"> Evidence: <code>dig</code>, <code>curl -I</code>, and a WAF event screenshot.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>deployment/cloudflare/README.md</code></a>.</li>
+</ul>
+<h3>G7 — AI usage with a prompt log (required)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Every AI prompt that influenced the code is recorded via <code>pnpm ai:log</code>.</li>
+<li><input disabled="" type="checkbox"> <code>pnpm ai:verify</code> passes in CI.</li>
+<li><input disabled="" type="checkbox"> Each entry has: tool, model, task, prompt, summary, decision, files.</li>
+<li><input disabled="" type="checkbox"> <strong>Show your rejected AI suggestions too</strong> — judgment is what is scored.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/AI-USAGE.md</code></a>.</li>
+</ul>
+<h3>G8 — Build your own sub-agents (required)</h3>
+<ul>
+<li><input disabled="" type="checkbox"> At least <strong>three</strong> working sub-agents under <a data-internal-link="true"><code>.opencode/agent/</code></a>.</li>
+<li><input disabled="" type="checkbox"> Starter agents are provided (<code>ledger-architect</code>, <code>ui-unslop</code>,
+<code>test-runner</code>, <code>deploy-security</code>) — you must <strong>extend or replace</strong> them
+with agents that fit your workflow, and demonstrate them working.</li>
+<li><input disabled="" type="checkbox"> See <a data-internal-link="true"><code>docs/SUBAGENTS.md</code></a>.</li>
+</ul>
+<hr>
+<h2>3. Scoring rubric</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Criterion</th>
+<th>Weight</th>
+<th>What earns full marks</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>Correctness</strong> — G0/G1</td>
+<td>25</td>
+<td>Challenge suite green by fixing source; invariant proven by tests; no regressions</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Engineering quality</strong> — G1/G3</td>
+<td>15</td>
+<td>Clean ports/adapters, migrations, typed boundaries, readable tests</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>UI quality</strong> — G2</td>
+<td>15</td>
+<td>Design rules met; dashboard is clear and trustworthy</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Production-scale</strong> — G4</td>
+<td>15</td>
+<td>Reproducible deploy, health checks, scaling, managed DB, pooling</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Security</strong> — G5</td>
+<td>15</td>
+<td>Secrets, CORS, internal-token boundary, headers, least privilege</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>AI prompt log</strong> — G7</td>
+<td>5</td>
+<td>Complete, honest, includes decisions and rejected suggestions</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Sub-agents</strong> — G8</td>
+<td>5</td>
+<td>≥3 agents, clearly scoped, demonstrably used</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Cloudflare + TLD</strong> — G6 (bonus)</td>
+<td>+5</td>
+<td>Real domain, proxied, Full (strict), WAF + rate limit, evidence</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Extra credit</strong></td>
+<td>+5</td>
+<td>Multi-currency reporting, audit trail, CSV/PDF export, OpenAPI, load test</td>
+</tr>
+</tbody></table>
+<p>Automatic fail: tests edited to pass without fixing source; secrets committed;
+<code>CORS_ORIGINS=*</code> in production; fake AI log entries.</p>
+<hr>
+<h2>4. Architecture</h2>
+<pre><code>                    ┌──────────────────────────┐
+   Browser ───────▶ │  apps/web  (React SPA)   │
+                    │  dashboard · ledger · UI │
+                    └───────┬──────────┬───────┘
+                            │          │
+              VITE_LEDGER_API_URL   VITE_REPORTING_API_URL
+                            ▼          ▼
+        ┌───────────────────────────┐  ┌──────────────────────────────┐
+        │ apps/ledger-api (Hono)    │  │ apps/reporting-api (Hono)    │
+        │ accounts · journal entries│◀─│ dashboard · P&amp;L · balance    │
+        │ trial balance · postings  │  │ sheet (reads postings over   │
+        │                           │  │ /api/internal/postings)      │
+        └─────────────┬─────────────┘  └──────────────────────────────┘
+                      │ LedgerRepository (port)
+          ┌───────────┴───────────┐
+          ▼                       ▼
+  InMemoryLedgerRepository   PostgresLedgerRepository
+  (zero-config default)      (Drizzle + PostgreSQL)
+
+  packages/shared → domain types, money math, reporting engine, errors
+  packages/db     → Drizzle schema + both repository adapters
+  packages/ui     → design system (unslop primitives)
+</code></pre>
+<p><strong>Key invariant.</strong> <code>amountMinor</code> is a <strong>signed integer</strong>: <code>&gt; 0</code> is a debit,
+<code>&lt; 0</code> is a credit. For every entry, <code>Σ amountMinor === 0</code>. Never introduce
+floating point for money.</p>
+<hr>
+<h2>5. Repository map</h2>
+<pre><code>apps/
+  web/                       React + Vite dashboard (Tailwind v4)
+  ledger-api/                Accounts, journal entries, trial balance
+    src/app.ts               Hono app factory (testable, no listen)
+    src/services/            Business rules (LedgerService)
+    src/repositories/        Storage adapter selection
+    src/challenges/          🔴 Red specs that define your work
+  reporting-api/             Reports built from postings (service-to-service)
+packages/
+  shared/                    Domain types, money, reporting engine, seed, errors
+  db/                        Drizzle schema, Postgres + in-memory adapters, seed
+  ui/                        Design system (Button, Card, Stat, Table, …)
+deployment/
+  Dockerfile.*, nginx.conf, render.yaml
+  aws/ gcp/ azure/ cloudflare/
+docs/                        Tasks, design, database, deployment, security, AI, sub-agents
+scripts/                     log-ai-prompt.mjs, verify-ai-log.mjs
+.opencode/agent/             Your sub-agents live here
+</code></pre>
+<hr>
+<h2>6. Quick start</h2>
+<p>Requirements: <strong>Node ≥ 20.11</strong>, <strong>pnpm 10</strong> (<code>corepack enable</code>). Docker optional.</p>
+<pre><code class="language-bash">pnpm install
+
+# Terminal 1 — ledger API          (in-memory, seeded, no DB needed)
+pnpm --filter @ledgerlab/ledger-api dev
+
+# Terminal 2 — reporting API
+pnpm --filter @ledgerlab/reporting-api dev
+
+# Terminal 3 — dashboard  → http://localhost:5173
+pnpm --filter @ledgerlab/web dev
+</code></pre>
+<p>Or run everything: <code>pnpm dev</code> (Turborepo, parallel).</p>
+<p>Useful commands:</p>
+<pre><code class="language-bash">pnpm typecheck                       # all packages
+pnpm test                            # green baseline
+pnpm build                           # bundles APIs + builds the SPA
+pnpm ai:log -- --help                # log an AI interaction
+pnpm ai:verify                       # CI gate for the prompt log
+pnpm --filter @ledgerlab/ledger-api test:challenges   # red — your work
+</code></pre>
+<p>Copy <code>.env.example</code> to <code>.env</code> if you want to override ports or point at a
+database.</p>
+<hr>
+<h2>7. Databases</h2>
+<p>The scaffold ships two adapters behind one port. The <strong>default is in-memory</strong>
+so reviewers can run it instantly; <strong>G3 requires you to use a real database</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>PostgreSQL</strong></td>
+<td>Wired via Drizzle: <code>packages/db/src/postgres-repository.ts</code>. Recommended.</td>
+</tr>
+<tr>
+<td><strong>MySQL / MariaDB</strong></td>
+<td>Implement <code>LedgerRepository</code> and add a Drizzle MySQL schema.</td>
+</tr>
+<tr>
+<td><strong>SQLite / libSQL</strong></td>
+<td>Great for local + edge; same port.</td>
+</tr>
+<tr>
+<td><strong>SQL Server</strong></td>
+<td>Acceptable; add the Drizzle/mssql adapter.</td>
+</tr>
+</tbody></table>
+<pre><code class="language-bash">cp .env.example .env
+# DATABASE_URL=postgres://ledgerlab:ledgerlab@localhost:5432/ledgerlab
+pnpm --filter @ledgerlab/db migrate:sql
+pnpm --filter @ledgerlab/db seed
+</code></pre>
+<p>Details, schema, and the port contract: <a data-internal-link="true"><code>docs/DATABASE.md</code></a>.</p>
+<hr>
+<h2>8. Deployment</h2>
+<p>Pick one target and make it reproducible. Notes for all of:</p>
+<ul>
+<li><strong>Render</strong> — <code>deployment/render.yaml</code> Blueprint (DB + 2 services + static site).</li>
+<li><strong>AWS</strong> — <code>deployment/aws/</code> (ECS Fargate, RDS, S3+CloudFront).</li>
+<li><strong>GCP</strong> — <code>deployment/gcp/</code> (Cloud Run, Cloud SQL).</li>
+<li><strong>Azure</strong> — <code>deployment/azure/</code> (Container Apps, Flexible Server).</li>
+<li><strong>Cloudflare + TLD</strong> — <code>deployment/cloudflare/</code> (scored bonus).</li>
+</ul>
+<p>Full walkthrough and the definition of &quot;production-scale&quot;: <a data-internal-link="true"><code>docs/DEPLOYMENT.md</code></a>.</p>
+<hr>
+<h2>9. AI usage rules</h2>
+<p>AI is allowed and expected. The rule is simple: <strong>if an AI helped, it is logged.</strong></p>
+<pre><code class="language-bash">pnpm ai:log -- \
+  --tool &quot;opencode&quot; --model &quot;deepseek/deepseek-v4.1-flash&quot; \
+  --subagent &quot;ledger-architect&quot; \
+  --task &quot;Fix trial balance asOf filtering&quot; \
+  --prompt &quot;buildTrialBalance ignores asOf; make it filter postings by date&quot; \
+  --summary &quot;Added date filter in reporting aggregate; kept balanced flag&quot; \
+  --decision &quot;accepted&quot; \
+  --files &quot;packages/shared/src/reporting.ts&quot;
+</code></pre>
+<p>This appends to <code>docs/ai/prompt-log.jsonl</code> and regenerates
+<a data-internal-link="true"><code>docs/AI-PROMPT-LOG.md</code></a>. <code>pnpm ai:verify</code> (run in CI)
+fails on missing or incomplete records. Full policy:
+<a data-internal-link="true"><code>docs/AI-USAGE.md</code></a>.</p>
+<hr>
+<h2>10. Sub-agents</h2>
+<p>You must build sub-agents and use them for the work. Starter agents exist under
+<code>.opencode/agent/</code>; extend or replace them. Suggested additions:</p>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ledger-architect</code> <em>(provided)</em></td>
+<td>Owns the double-entry invariant and posting rules</td>
+</tr>
+<tr>
+<td><code>ui-unslop</code> <em>(provided)</em></td>
+<td>Enforces the design rules on every screen</td>
+</tr>
+<tr>
+<td><code>test-runner</code> <em>(provided)</em></td>
+<td>Runs typecheck/test/build and reports minimal fixes</td>
+</tr>
+<tr>
+<td><code>deploy-security</code> <em>(provided)</em></td>
+<td>Production-scale + security review of the deploy</td>
+</tr>
+<tr>
+<td><code>db-migrator</code> <em>(suggested)</em></td>
+<td>Schema, migrations, seeding, and the repository port</td>
+</tr>
+<tr>
+<td><code>reporting-verifier</code> <em>(suggested)</em></td>
+<td>Proves reports tie out to the ledger</td>
+</tr>
+</tbody></table>
+<p>Spec and definition of done: <a data-internal-link="true"><code>docs/SUBAGENTS.md</code></a>.</p>
+<hr>
+<h2>11. Submission</h2>
+<ol>
+<li>Push a branch; keep the build green (<code>pnpm typecheck &amp;&amp; pnpm test &amp;&amp; pnpm build</code>).</li>
+<li>Attach <strong>deployed URLs</strong> (dashboard + APIs) and <code>/health</code> responses.</li>
+<li>Include the <strong>AI prompt log</strong> (<code>docs/AI-PROMPT-LOG.md</code>) and your <strong>sub-agent</strong>
+definitions (<code>.opencode/agent/</code>).</li>
+<li>Add <code>docs/SUBMISSION.md</code> with: what you changed, what you skipped and why,
+your deploy commands, Cloudflare/TLD evidence, and known limitations.</li>
+</ol>
+<p><strong>Suggested time budget:</strong> 6–8 hours. G0 + G1 first (correctness), then G2,
+then G3–G5, then G6 if time allows. Underscope deliberately and document it.</p>
+<hr>
+<h2>12. Non-goals</h2>
+<ul>
+<li>Real auth / multi-tenancy (mention how you would add it; do not build it).</li>
+<li>Payments, invoicing, payroll, tax filing.</li>
+<li>A pixel-perfect design system — clarity beats polish.</li>
+<li>100% test coverage — test the invariants and the edges that matter.</li>
+</ul>
+
+  </section>
+
+  <section class="doc" id="doc-2">
+    <p class="doc-kicker">Part 2 · <span class="mono">docs/TASKS.md</span></p>
+    <h1>2. Task backlog</h1>
+    <p>Ordered backlog. Work top to bottom; stop and document when you run out of time.
+Every completed item should have evidence (a test, a command, or a screenshot).</p>
+<p>Legend: <strong>P0</strong> blocks everything · <strong>P1</strong> core · <strong>P2</strong> required for full marks ·
+<strong>P3</strong> stretch.</p>
+<hr>
+<h2>P0 — Fix the errors</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>pnpm --filter @ledgerlab/ledger-api test:challenges</code> is red. Make it green
+<strong>by fixing production code</strong>, never the specs.
+<ul>
+<li><strong>Challenge A</strong> (<code>src/challenges/asof.challenge.ts</code>) — <code>buildTrialBalance</code>
+ignores <code>asOf</code>, so periods bleed into each other. Fix the date filtering in
+<code>packages/shared/src/reporting.ts</code>.</li>
+<li><strong>Challenge B</strong> (<code>src/challenges/void.challenge.ts</code>) — voiding is an
+unguarded state change. Make <code>POSTED → VOID</code> the only legal transition and
+return <code>409 CONFLICT</code> otherwise. Touch <code>LedgerService</code> and both repository
+adapters.</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> <code>pnpm typecheck &amp;&amp; pnpm test &amp;&amp; pnpm build</code> all pass from a clean clone.</li>
+</ul>
+<h2>P1 — Core ledger correctness</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Add a test that proves the balancing invariant for the Postgres adapter
+too (or for the port in general), not just the in-memory one.</li>
+<li><input disabled="" type="checkbox"> Reject journal lines that reference an <strong>inactive</strong> account.</li>
+<li><input disabled="" type="checkbox"> Reject entries dated in a closed accounting period (add a <code>periods</code> table
+or a simple <code>closedThrough</code> setting; document the rule you chose).</li>
+<li><input disabled="" type="checkbox"> Income statement and balance sheet must exclude <code>VOID</code> entries — add a
+regression test.</li>
+<li><input disabled="" type="checkbox"> <code>pnpm --filter @ledgerlab/ledger-api test:challenges</code> green in CI.</li>
+</ul>
+<h2>P2 — Product quality</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Un-slop the dashboard per <a data-internal-link="true"><code>DESIGN.md</code></a>: remove decorative
+icons, gradients, excess nested cards; fix hierarchy and spacing.</li>
+<li><input disabled="" type="checkbox"> Empty, loading, and error states on every page.</li>
+<li><input disabled="" type="checkbox"> Keyboard access: the ledger list is navigable, the entry form is usable
+without a mouse.</li>
+<li><input disabled="" type="checkbox"> Money input rejects bad values with an inline message (uses
+<code>parseAmountToMinor</code> errors).</li>
+<li><input disabled="" type="checkbox"> Pagination and filtering on the ledger list (status, date range).</li>
+</ul>
+<h2>P2 — Database</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Run against a real database (<code>docs/DATABASE.md</code>). PostgreSQL is wired;
+MySQL/SQLite are accepted if you implement the port.</li>
+<li><input disabled="" type="checkbox"> Migrations applied as a deploy step, not on boot.</li>
+<li><input disabled="" type="checkbox"> Seeding is idempotent and scripted.</li>
+<li><input disabled="" type="checkbox"> Connection pooling configured and documented.</li>
+</ul>
+<h2>P2 — Deploy, scale, secure</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Deploy to Render / AWS / GCP / Azure (one is enough).</li>
+<li><input disabled="" type="checkbox"> Health checks wired; ≥2 replicas or <code>min-instances ≥ 1</code>.</li>
+<li><input disabled="" type="checkbox"> Secrets in the platform store; <strong>no</strong> secret in the repo.</li>
+<li><input disabled="" type="checkbox"> <code>CORS_ORIGINS</code> restricted; <code>INTERNAL_API_TOKEN</code> set.</li>
+<li><input disabled="" type="checkbox"> HSTS + secure headers at the edge.</li>
+<li><input disabled="" type="checkbox"> Rate limit on <code>/api/*</code>.</li>
+<li><input disabled="" type="checkbox"> Migrations run as a job/step, not at container start.</li>
+</ul>
+<h2>P3 — Bonus (Cloudflare + TLD)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Custom domain on a real TLD, proxied through Cloudflare.</li>
+<li><input disabled="" type="checkbox"> TLS Full (strict), Always Use HTTPS, HSTS.</li>
+<li><input disabled="" type="checkbox"> WAF managed rules + a rate-limit rule.</li>
+<li><input disabled="" type="checkbox"> <code>/api/internal/*</code> blocked at the edge.</li>
+<li><input disabled="" type="checkbox"> Cache rules: assets cached, API bypassed.</li>
+<li><input disabled="" type="checkbox"> Evidence committed (<code>dig</code>, <code>curl -I</code>, WAF event screenshot).</li>
+</ul>
+<h2>P3 — Extra credit</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Multi-currency: reports must not sum across currencies silently. Group by
+currency or require an explicit FX rate.</li>
+<li><input disabled="" type="checkbox"> Audit trail: who changed what, when.</li>
+<li><input disabled="" type="checkbox"> CSV or PDF export for the trial balance.</li>
+<li><input disabled="" type="checkbox"> OpenAPI spec generated from the route schemas.</li>
+<li><input disabled="" type="checkbox"> A load test (<code>k6</code>/<code>autocannon</code>) with results committed.</li>
+</ul>
+<hr>
+<h2>Definition of done (whole test)</h2>
+<ol>
+<li><code>pnpm typecheck &amp;&amp; pnpm test &amp;&amp; pnpm build</code> green.</li>
+<li><code>pnpm --filter @ledgerlab/ledger-api test:challenges</code> green.</li>
+<li><code>pnpm ai:verify</code> green and the log is honest.</li>
+<li>Deployed URL with <code>/health</code> returning <code>200</code>.</li>
+<li><code>docs/SUBMISSION.md</code> written: changes, decisions, evidence, limitations.</li>
+</ol>
+
+  </section>
+
+  <section class="doc" id="doc-3">
+    <p class="doc-kicker">Part 3 · <span class="mono">docs/DESIGN.md</span></p>
+    <h1>3. Design rules (anti-slop)</h1>
+    <p>The dashboard must look like a product, not a template. These rules are
+enforced; the <code>ui-unslop</code> sub-agent reviews against them.</p>
+<h2>Colour — 70 / 20 / 10</h2>
+<ul>
+<li><strong>70%</strong> neutral base: <code>zinc</code> backgrounds, white surfaces, zinc-900 text.</li>
+<li><strong>20%</strong> supporting: borders, muted text, hover states.</li>
+<li><strong>10%</strong> accent: <strong>one</strong> accent colour (<code>indigo-600</code>) for primary actions and
+focus. Semantic colours only for state: <code>emerald</code> (positive/balanced),
+<code>amber</code> (warning), <code>red</code> (negative/error).</li>
+<li>Do <strong>not</strong> give each card its own tint. Let whitespace separate things.</li>
+</ul>
+<h2>Icons</h2>
+<ul>
+<li>Icons are for <strong>actions and navigation only</strong>, from <strong>one</strong> library
+(<code>lucide-react</code>), rendered inline.</li>
+<li><strong>Never</strong> put an icon in a coloured rounded square/circle.</li>
+<li>If removing an icon loses no information, remove it.</li>
+</ul>
+<h2>Typography</h2>
+<ul>
+<li>Sans-serif only (<code>Inter</code>, system UI). <strong>No decorative serif headlines.</strong></li>
+<li>Establish hierarchy with size/weight/colour, not with boxes.</li>
+<li>Money and quantities use <code>tabular-nums</code> and are <strong>right-aligned</strong>.</li>
+</ul>
+<h2>Surfaces</h2>
+<ul>
+<li>Solid backgrounds. <strong>No glassmorphism / <code>backdrop-filter</code>.</strong></li>
+<li><strong>No gradients</strong> on text, buttons, or cards. <strong>No coloured/glowing shadows.</strong></li>
+<li>Shadows are subtle, neutral, and indicate elevation only (<code>shadow-xs</code>).</li>
+<li><strong>No cards nested in cards.</strong> If you need grouping, use a heading and spacing.</li>
+<li>Never combine <code>border-left</code> with <code>border-radius</code> on a container.</li>
+</ul>
+<h2>Motion</h2>
+<ul>
+<li>No entrance animations on content. Transitions only for state feedback
+(hover, focus, loading), 150–300 ms.</li>
+<li>Never animate content in a way that breaks when it is already in the viewport.</li>
+</ul>
+<h2>Empty, loading, error states</h2>
+<ul>
+<li>Every async surface has all three, designed — not a spinner in the corner.</li>
+<li>Errors are human sentences, not stack traces.</li>
+</ul>
+<h2>Do not ship</h2>
+<ul>
+<li>Emojis as visual assets.</li>
+<li>A floating chat bubble.</li>
+<li>More than one accent hue competing for attention.</li>
+<li>Placeholder &quot;Lorem ipsum&quot; or fake statistics.</li>
+</ul>
+<h2>Checklist before you claim G2 done</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Squint test: the page is not one blob of similar colour.</li>
+<li><input disabled="" type="checkbox"> Exactly one accent colour in use.</li>
+<li><input disabled="" type="checkbox"> No icon-in-rounded-square anywhere.</li>
+<li><input disabled="" type="checkbox"> No gradient, no glass, no coloured shadow.</li>
+<li><input disabled="" type="checkbox"> No card-in-card.</li>
+<li><input disabled="" type="checkbox"> Money columns are tabular and right-aligned.</li>
+<li><input disabled="" type="checkbox"> Keyboard focus is visible on every interactive element.</li>
+<li><input disabled="" type="checkbox"> Loading / empty / error states exist on every data surface.</li>
+</ul>
+
+  </section>
+
+  <section class="doc" id="doc-4">
+    <p class="doc-kicker">Part 4 · <span class="mono">docs/DATABASE.md</span></p>
+    <h1>4. Database</h1>
+    <p>The scaffold defines one storage port and ships two adapters. <strong>G3 requires you
+to run against a real database.</strong> PostgreSQL is wired end to end; <strong>MySQL,
+MariaDB, SQLite/libSQL, and SQL Server are all acceptable</strong> if you implement the
+port.</p>
+<h2>The port</h2>
+<pre><code class="language-ts">// packages/shared/src/repository.ts
+export interface LedgerRepository {
+  readonly kind: &quot;memory&quot; | &quot;postgres&quot;; // extend the union for new engines
+  listAccounts(): Promise&lt;Account[]&gt;;
+  getAccountById(id: string): Promise&lt;Account | undefined&gt;;
+  getAccountByCode(code: string): Promise&lt;Account | undefined&gt;;
+  createAccount(input: CreateAccountInput): Promise&lt;Account&gt;;
+
+  listJournalEntries(query: ListJournalEntriesQuery): Promise&lt;Paginated&lt;JournalEntry&gt;&gt;;
+  getJournalEntry(id: string): Promise&lt;JournalEntry | undefined&gt;;
+  createJournalEntry(input: CreateJournalEntryInput): Promise&lt;JournalEntry&gt;;
+  voidJournalEntry(id: string): Promise&lt;JournalEntry | undefined&gt;;
+
+  /** POSTED lines joined with account metadata — the source for all reports. */
+  listPostings(): Promise&lt;PostingRow[]&gt;;
+}
+</code></pre>
+<p>Business rules live in <code>LedgerService</code>, <strong>not</strong> in the adapter. An adapter only
+persists and reads back; it must not silently &quot;fix&quot; an unbalanced entry.</p>
+<h2>Option A — PostgreSQL (wired, recommended)</h2>
+<ul>
+<li>Schema: <code>packages/db/src/schema.ts</code> (Drizzle, <code>pg-core</code>).</li>
+<li>Adapter: <code>packages/db/src/postgres-repository.ts</code>.</li>
+<li>Migration SQL: <code>packages/db/migrations/0000_init.sql</code>.</li>
+</ul>
+<pre><code class="language-bash">cp .env.example .env
+# DATABASE_URL=postgres://ledgerlab:ledgerlab@localhost:5432/ledgerlab
+
+# Apply the schema (idempotent SQL). Or use drizzle-kit generate/migrate
+# once you start evolving the schema.
+pnpm --filter @ledgerlab/db migrate:sql
+
+# Load the demo chart of accounts + journal entries (idempotent)
+pnpm --filter @ledgerlab/db seed
+</code></pre>
+<p>Selecting the adapter is automatic: if <code>DATABASE_URL</code> is set, <code>resolveLedgerRepository()</code>
+uses Postgres; otherwise it falls back to the seeded in-memory adapter.</p>
+<p>Local Postgres without Docker:</p>
+<pre><code class="language-bash">createuser ledgerlab --pwprompt
+createdb ledgerlab -O ledgerlab
+</code></pre>
+<p>Or with Docker (if available):</p>
+<pre><code class="language-bash">docker run --name ledgerlab-db -e POSTGRES_USER=ledgerlab -e POSTGRES_PASSWORD=ledgerlab \
+  -e POSTGRES_DB=ledgerlab -p 5432:5432 -d postgres:16
+</code></pre>
+<h2>Option B — MySQL / MariaDB</h2>
+<ol>
+<li>Add <code>mysql2</code> and a <code>mysqlTable</code> schema in <code>packages/db/src/schema.mysql.ts</code>.</li>
+<li>Implement <code>MySqlLedgerRepository</code> against the same port.</li>
+<li>Generate migrations with <code>drizzle-kit</code> (<code>dialect: &quot;mysql&quot;</code>).</li>
+<li>Extend <code>resolveLedgerRepository()</code> to pick it from <code>DATABASE_URL</code> (e.g. the
+<code>mysql://</code> scheme) and widen the <code>kind</code> union.</li>
+</ol>
+<h2>Option C — SQLite / libSQL</h2>
+<p>Useful for local dev and edge. Implement the port over <code>better-sqlite3</code> or
+<code>@libsql/client</code>, store money as <code>INTEGER</code> (never <code>REAL</code>), and enable
+<code>PRAGMA foreign_keys = ON</code> plus WAL mode.</p>
+<h2>Option D — SQL Server</h2>
+<p>Implement the port with <code>mssql</code>/Drizzle <code>mssql-core</code>. Use <code>BIGINT</code> for
+<code>amount_minor</code> and a <code>VARCHAR(4)</code> unique index on <code>accounts.code</code>.</p>
+<h2>Data model</h2>
+<pre><code>accounts(id, code UNIQUE, name, type, currency, is_active, created_at)
+journal_entries(id, entry_date, memo, reference, status, created_at)
+journal_lines(id, entry_id → journal_entries, account_id → accounts,
+              amount_minor, position, memo)
+</code></pre>
+<p><strong>Money is <code>amount_minor</code>, a signed integer</strong>: <code>&gt; 0</code> debit, <code>&lt; 0</code> credit.
+No <code>REAL</code>/<code>FLOAT</code>/<code>DOUBLE</code> column may ever hold money.</p>
+<h2>Migrations</h2>
+<ul>
+<li>Never auto-sync schema in production. Run migrations as a deploy step or a
+one-off job, with the DB user that owns the schema.</li>
+<li>The app&#39;s runtime user should be least-privilege (SELECT/INSERT/UPDATE on the
+three tables; no DDL outside the migration step).</li>
+<li>Keep migrations forward-only and idempotent where possible (<code>CREATE TABLE IF NOT EXISTS</code>).</li>
+</ul>
+<h2>Seeding</h2>
+<p><code>packages/shared/src/seed.ts</code> defines the demo chart of accounts and entries.
+<code>seed()</code> on the in-memory adapter and <code>pnpm --filter @ledgerlab/db seed</code> against
+Postgres both consume it, so behaviour matches. Seeding must be safe to re-run.</p>
+<h2>Production checklist</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Managed database (RDS / Cloud SQL / Azure Flexible Server / Render
+Postgres) in a private network; not publicly reachable.</li>
+<li><input disabled="" type="checkbox"> TLS required; verify the certificate.</li>
+<li><input disabled="" type="checkbox"> Connection pool sized to the plan (start at 10); enable an idle timeout.</li>
+<li><input disabled="" type="checkbox"> Automated backups with a retention policy; <strong>test a restore</strong>.</li>
+<li><input disabled="" type="checkbox"> Point-in-time recovery or daily snapshots.</li>
+<li><input disabled="" type="checkbox"> Alerts on connection saturation and slow queries.</li>
+<li><input disabled="" type="checkbox"> Migrations applied before the new version starts serving traffic.</li>
+</ul>
+
+  </section>
+
+  <section class="doc" id="doc-5">
+    <p class="doc-kicker">Part 5 · <span class="mono">docs/DEPLOYMENT.md</span></p>
+    <h1>5. Deployment</h1>
+    <p>Deploy to <strong>at least one</strong> of Render / AWS / GCP / Azure, over HTTPS, with health
+checks and a managed database. Then, for bonus marks, put <strong>Cloudflare</strong> in front
+on a <strong>real TLD</strong>.</p>
+<p>Per-cloud runbooks:</p>
+<ul>
+<li>Render — <a data-internal-link="true"><code>deployment/render.yaml</code></a></li>
+<li>AWS — <a data-internal-link="true"><code>deployment/aws/README.md</code></a></li>
+<li>GCP — <a data-internal-link="true"><code>deployment/gcp/README.md</code></a></li>
+<li>Azure — <a data-internal-link="true"><code>deployment/azure/README.md</code></a></li>
+<li>Cloudflare + TLD — <a data-internal-link="true"><code>deployment/cloudflare/README.md</code></a></li>
+</ul>
+<h2>Recommended path: Render (fastest to a real URL)</h2>
+<pre><code class="language-bash"># 1. Push the repo to GitHub.
+# 2. Render Dashboard → New → Blueprint → select the repo.
+#    The blueprint in deployment/render.yaml provisions:
+#      - ledgerlab-db        (managed PostgreSQL)
+#      - ledgerlab-ledger-api     (Docker, public, /health)
+#      - ledgerlab-reporting-api  (Docker, public, /health)
+#      - ledgerlab-web       (static SPA)
+# 3. Fill the `sync: false` values: CORS_ORIGINS and the two VITE_* URLs.
+# 4. Run migrations once (Render Shell or a one-off job):
+#      pnpm --filter @ledgerlab/db migrate:sql
+#      pnpm --filter @ledgerlab/db seed
+</code></pre>
+<p><code>INTERNAL_API_TOKEN</code> is generated by Render and shared to the reporting service
+via <code>fromService</code>, so <code>/api/internal/*</code> stays service-to-service only.</p>
+<h2>Environment variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Service</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>DATABASE_URL</code></td>
+<td>ledger-api</td>
+<td>prod</td>
+<td>Postgres/MySQL connection string</td>
+</tr>
+<tr>
+<td><code>LEDGER_API_PORT</code></td>
+<td>ledger-api</td>
+<td>no</td>
+<td>default <code>4001</code></td>
+</tr>
+<tr>
+<td><code>REPORTING_API_PORT</code></td>
+<td>reporting-api</td>
+<td>no</td>
+<td>default <code>4002</code></td>
+</tr>
+<tr>
+<td><code>LEDGER_API_URL</code></td>
+<td>reporting-api</td>
+<td>yes</td>
+<td>ledger base URL</td>
+</tr>
+<tr>
+<td><code>INTERNAL_API_TOKEN</code></td>
+<td>both APIs</td>
+<td>prod</td>
+<td>guards <code>/api/internal/*</code></td>
+</tr>
+<tr>
+<td><code>CORS_ORIGINS</code></td>
+<td>both APIs</td>
+<td>prod</td>
+<td>comma-separated; never <code>*</code> in prod</td>
+</tr>
+<tr>
+<td><code>VITE_LEDGER_API_URL</code></td>
+<td>web</td>
+<td>yes</td>
+<td>baked in at build time</td>
+</tr>
+<tr>
+<td><code>VITE_REPORTING_API_URL</code></td>
+<td>web</td>
+<td>yes</td>
+<td>baked in at build time</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>The two <code>VITE_*</code> values are <strong>build-time</strong>, not runtime. Change the API host?
+Rebuild the dashboard.</p>
+</blockquote>
+<h2>Health checks</h2>
+<p>Both APIs expose <code>GET /health</code> returning
+<code>{ status, service, version, uptimeSeconds, repository }</code>. Point the platform&#39;s
+health check at it and use it for zero-downtime rollout and rollback.</p>
+<h2>Docker</h2>
+<pre><code class="language-bash"># APIs (build from the repo root)
+docker build -f deployment/Dockerfile.ledger-api    -t ledgerlab/ledger-api .
+docker build -f deployment/Dockerfile.reporting-api -t ledgerlab/reporting-api .
+
+# Dashboard (bake in the API URLs)
+docker build -f deployment/Dockerfile.web \
+  --build-arg VITE_LEDGER_API_URL=https://api.example.com \
+  --build-arg VITE_REPORTING_API_URL=https://reports.example.com \
+  -t ledgerlab/web .
+</code></pre>
+<h2>What &quot;production-scale&quot; means here (G4)</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Stateless</strong> services — no local disk state; any replica can serve any request.</li>
+<li><input disabled="" type="checkbox"> <strong>≥2 replicas</strong> (or <code>min-instances ≥ 1</code> + <code>max-instances</code> autoscaling).</li>
+<li><input disabled="" type="checkbox"> <strong>Managed database</strong> with backups and a private network path.</li>
+<li><input disabled="" type="checkbox"> <strong>Connection pooling</strong> sized to the plan; no connection-per-request.</li>
+<li><input disabled="" type="checkbox"> <strong>Graceful shutdown</strong>: SIGTERM drains in-flight requests and closes the pool
+(already wired in both <code>src/index.ts</code> files).</li>
+<li><input disabled="" type="checkbox"> <strong>Health checks</strong> gate the rollout; a failing replica is replaced.</li>
+<li><input disabled="" type="checkbox"> <strong>Migrations as a separate step</strong>, never on container boot.</li>
+<li><input disabled="" type="checkbox"> <strong>Observability</strong>: structured logs retained, an alert on 5xx and p95 latency.</li>
+<li><input disabled="" type="checkbox"> <strong>Reproducible</strong>: one documented command (or a committed blueprint/IaC)
+recreates the environment.</li>
+</ul>
+<h2>Rollback and migrations</h2>
+<ul>
+<li>Keep migrations backward compatible for one release (add columns, don&#39;t
+rename/drop in the same deploy).</li>
+<li>Roll back the app by redeploying the previous image — the DB must still work
+with it.</li>
+<li>Never roll back by reverting a migration in production unless you have
+verified it is lossless.</li>
+</ul>
+<h2>Cost note</h2>
+<p>Everything above fits free/low tiers (Render starter, Cloud Run scale-to-zero,
+Fargate Spot, Container Apps consumption). Document what you actually used and
+what it costs.</p>
+
+  </section>
+
+  <section class="doc" id="doc-6">
+    <p class="doc-kicker">Part 6 · <span class="mono">docs/SECURITY.md</span></p>
+    <h1>6. Security</h1>
+    <p>Deploying an accounting product means the data must be trustworthy and private.
+This checklist is what G5 is graded on. Each item needs evidence — a config, a
+command, or a screenshot.</p>
+<h2>1. Secrets</h2>
+<ul>
+<li><input disabled="" type="checkbox"> No secret in git. <code>.env</code> is gitignored; only <code>.env.example</code> is committed.</li>
+<li><input disabled="" type="checkbox"> All secrets come from the platform store (Render env / AWS SSM / GCP
+Secret Manager / Azure Key Vault).</li>
+<li><input disabled="" type="checkbox"> <code>INTERNAL_API_TOKEN</code> is generated by the platform, not hard-coded.</li>
+<li><input disabled="" type="checkbox"> Database credentials use a dedicated, least-privilege user — not the
+managed master/root account.</li>
+<li><input disabled="" type="checkbox"> Rotate the token and DB password once and show the rotation works.</li>
+</ul>
+<h2>2. Service-to-service boundary</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>/api/internal/*</code> requires <code>Authorization: Bearer $INTERNAL_API_TOKEN</code>
+(implemented in <code>apps/ledger-api/src/routes/internal.ts</code>).</li>
+<li><input disabled="" type="checkbox"> The endpoint is <strong>not</strong> reachable from the public internet: - Render: keep it on the private network / block via a rule. - Cloudflare: a WAF rule blocks <code>POST /api/internal/*</code>. - AWS/GCP/Azure: restrict to the internal ALB / service network.</li>
+<li><input disabled="" type="checkbox"> Evidence: <code>curl -X POST https://&lt;api&gt;/api/internal/postings</code> returns
+<code>401</code>/<code>403</code>/<code>404</code> — never <code>200</code>.</li>
+</ul>
+<h2>3. CORS</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>CORS_ORIGINS</code> is the exact dashboard origin (<code>https://ledgerlab.example.com</code>).</li>
+<li><input disabled="" type="checkbox"> <code>*</code> is used <strong>only</strong> for local development.</li>
+<li><input disabled="" type="checkbox"> Preflight is verified: <code>curl -H &quot;Origin: https://evil.example&quot; -I ...</code> does
+not echo the origin back in <code>Access-Control-Allow-Origin</code>.</li>
+</ul>
+<h2>4. Transport and headers</h2>
+<ul>
+<li><input disabled="" type="checkbox"> HTTPS only; HTTP redirects to HTTPS.</li>
+<li><input disabled="" type="checkbox"> HSTS (<code>max-age</code> ≥ 31536000, <code>includeSubDomains</code>, <code>preload</code>).</li>
+<li><input disabled="" type="checkbox"> <code>X-Content-Type-Options: nosniff</code>; <code>Referrer-Policy: strict-origin-when-cross-origin</code>; <code>X-Frame-Options: DENY</code> (or a CSP <code>frame-ancestors &#39;none&#39;</code>).</li>
+<li><input disabled="" type="checkbox"> A Content-Security-Policy for the dashboard (see <code>deployment/nginx.conf</code>).</li>
+<li><input disabled="" type="checkbox"> TLS 1.2+ only; prefer Full (strict) at Cloudflare.</li>
+</ul>
+<h2>5. Input and output</h2>
+<ul>
+<li><input disabled="" type="checkbox"> All request bodies validated with Zod at the boundary (routes use
+<code>parseBody</code>).</li>
+<li><input disabled="" type="checkbox"> Money parsed by <code>parseAmountToMinor</code>; floats rejected.</li>
+<li><input disabled="" type="checkbox"> API errors never leak stack traces, SQL, or secrets — <code>onError</code> maps
+<code>AppError</code> to a structured body and everything else to a generic 500.</li>
+<li><input disabled="" type="checkbox"> Pagination is bounded (<code>pageSize</code> ≤ 200).</li>
+</ul>
+<h2>6. Rate limiting and abuse</h2>
+<ul>
+<li><input disabled="" type="checkbox"> A rate limit on <code>/api/*</code> (Cloudflare rule, Cloud Armor, WAF, or middleware).</li>
+<li><input disabled="" type="checkbox"> Document the chosen limit and the action (block/challenge).</li>
+<li><input disabled="" type="checkbox"> Evidence of a blocked burst.</li>
+</ul>
+<h2>7. Database</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Private network only; no public endpoint.</li>
+<li><input disabled="" type="checkbox"> Encryption at rest and in transit.</li>
+<li><input disabled="" type="checkbox"> Least-privilege app user (no DDL).</li>
+<li><input disabled="" type="checkbox"> Backups enabled and a restore tested.</li>
+</ul>
+<h2>8. Cloudflare layer (bonus, G6)</h2>
+<p>See <a data-internal-link="true"><code>deployment/cloudflare/README.md</code></a>.
+Summary: proxied DNS, TLS Full (strict), WAF managed rules, rate limiting,
+<code>/api/internal</code> block, cache rules that bypass the API, and origin locking
+(Authenticated Origin Pulls or Cloudflare Tunnel).</p>
+<h2>9. Known gaps (state them honestly)</h2>
+<p>Real auth and multi-tenancy are <strong>out of scope</strong> for this test. In
+<code>docs/SUBMISSION.md</code>, describe how you <em>would</em> add them:</p>
+<ul>
+<li>Authentication: OIDC provider, short-lived tokens, refresh rotation.</li>
+<li>Authorisation: per-tenant row scoping; every query filtered by <code>tenant_id</code>.</li>
+<li>Audit: an append-only log of who posted/voided what and when.</li>
+<li>Isolation: separate schema or database per tenant for regulated customers.</li>
+</ul>
+<p>Naming these gaps is better than pretending they do not exist.</p>
+
+  </section>
+
+  <section class="doc" id="doc-7">
+    <p class="doc-kicker">Part 7 · <span class="mono">docs/AI-USAGE.md</span></p>
+    <h1>7. AI usage policy</h1>
+    <p>AI assistance is <strong>allowed and expected</strong>. This test is not about whether you use
+AI — it is about whether you can direct it, verify it, and explain your choices.</p>
+<h2>The one rule</h2>
+<p><strong>If an AI helped produce something that ends up in the repo, that interaction is
+logged.</strong></p>
+<p>Use the provided script so the format is consistent and CI can verify it:</p>
+<pre><code class="language-bash">pnpm ai:log -- \
+  --tool &quot;opencode&quot; \
+  --model &quot;deepseek/deepseek-v4.1-flash&quot; \
+  --subagent &quot;ledger-architect&quot; \
+  --task &quot;Fix Challenge A: trial balance asOf&quot; \
+  --prompt &quot;buildTrialBalance ignores asOf. Make it filter postings by entryDate &lt;= asOf.&quot; \
+  --summary &quot;Filtered postings before aggregation; kept balanced flag computed from filtered rows.&quot; \
+  --decision &quot;accepted&quot; \
+  --files &quot;packages/shared/src/reporting.ts&quot;
+</code></pre>
+<ul>
+<li>Writes <code>docs/ai/prompt-log.jsonl</code> (source of truth) and regenerates
+<code>docs/AI-PROMPT-LOG.md</code> (human-readable table).</li>
+<li>Read a long prompt from stdin: <code>pbpaste | pnpm ai:log -- --tool … --prompt -</code></li>
+<li><code>pnpm ai:verify</code> fails CI on missing or incomplete records.</li>
+</ul>
+<h2>Required fields</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tool</code> / <code>model</code></td>
+<td>What produced the output</td>
+</tr>
+<tr>
+<td><code>subagent</code></td>
+<td>Which sub-agent (or blank)</td>
+</tr>
+<tr>
+<td><code>task</code></td>
+<td>The goal of the interaction</td>
+</tr>
+<tr>
+<td><code>prompt</code></td>
+<td>What you actually asked (verbatim, trimmed is fine)</td>
+</tr>
+<tr>
+<td><code>summary</code></td>
+<td>What changed as a result</td>
+</tr>
+<tr>
+<td><code>decision</code></td>
+<td><code>accepted</code> · <code>edited</code> · <code>rejected</code> · <code>reverted</code></td>
+</tr>
+<tr>
+<td><code>files</code></td>
+<td>Files the change touched</td>
+</tr>
+</tbody></table>
+<h2>What is scored</h2>
+<ul>
+<li><strong>Completeness.</strong> Every non-trivial change traces to a logged interaction.</li>
+<li><strong>Honesty.</strong> <code>decision: rejected</code> entries are <em>valuable</em> — they show judgment.
+A log with only sparkling successes reads as fiction.</li>
+<li><strong>Verification.</strong> You confirm the AI&#39;s output (tests, types, manual check)
+before trusting it. Say so in <code>summary</code>.</li>
+<li><strong>Direction.</strong> Your prompts get sharper over time: context, constraints,
+acceptance criteria.</li>
+</ul>
+<h2>What is penalised</h2>
+<ul>
+<li>Editing the challenge specs so they pass without fixing the source.</li>
+<li>Committing secrets an AI suggested.</li>
+<li>A prompt log that is empty, fabricated, or back-filled in one commit at the
+end.</li>
+<li>Shipping unverified AI output — e.g. floats for money, or a <code>CORS_ORIGINS=*</code>
+in production.</li>
+</ul>
+<h2>Suggested workflow</h2>
+<ol>
+<li>Ask the relevant sub-agent for a <strong>plan</strong> before code (log it).</li>
+<li>Apply the change yourself or let the agent edit; keep the diff small.</li>
+<li>Run <code>pnpm typecheck &amp;&amp; pnpm test</code>. If it fails, that is a <strong>new</strong> interaction.</li>
+<li>Log the decision: accepted / edited / rejected, and why.</li>
+<li>Commit the code together with its log entries — one story per commit.</li>
+</ol>
+<h2>Privacy</h2>
+<p>Do not paste real customer data, credentials, or proprietary third-party source
+into any AI tool. Use the demo data in <code>packages/shared/src/seed.ts</code>.</p>
+
+  </section>
+
+  <section class="doc" id="doc-8">
+    <p class="doc-kicker">Part 8 · <span class="mono">docs/SUBAGENTS.md</span></p>
+    <h1>8. Sub-agents</h1>
+    <p>You are required to <strong>build your own sub-agents</strong> and use them for the work
+(G8). Four starter agents are provided in <code>.opencode/agent/</code>; extend or replace
+them. An agent you actually used and can demonstrate scores; a folder of
+unused boilerplate does not.</p>
+<h2>What a sub-agent is</h2>
+<p>A narrowly-scoped collaborator with its own system prompt, tools, and definition
+of done. Good sub-agents:</p>
+<ul>
+<li>own <strong>one</strong> concern (the ledger invariant, the design rules, the deploy);</li>
+<li>are <strong>read-only</strong> when they review and <strong>write-enabled</strong> only when they build;</li>
+<li>produce <strong>evidence</strong>, not opinions;</li>
+<li>have an explicit output contract so their results are checkable.</li>
+</ul>
+<h2>Provided starters</h2>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Mode</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ledger-architect</code></td>
+<td>read-only</td>
+<td>Guards the double-entry invariant and posting rules</td>
+</tr>
+<tr>
+<td><code>ui-unslop</code></td>
+<td>write</td>
+<td>Enforces <code>docs/DESIGN.md</code> on every screen</td>
+</tr>
+<tr>
+<td><code>test-runner</code></td>
+<td>read-only</td>
+<td>Runs typecheck/test/build, reports the minimal fix</td>
+</tr>
+<tr>
+<td><code>deploy-security</code></td>
+<td>write</td>
+<td>Production-scale + security review of the deploy</td>
+</tr>
+</tbody></table>
+<h2>What you must do</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Keep <strong>at least three</strong> working agents (they may be the starters, improved).</li>
+<li><input disabled="" type="checkbox"> Add <strong>at least one</strong> agent of your own that fits your workflow. Likely candidates:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Suggested agent</th>
+<th>Job</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>db-migrator</code></td>
+<td>Schema, migrations, seeding, repository port; refuses <code>REAL</code> money columns</td>
+</tr>
+<tr>
+<td><code>reporting-verifier</code></td>
+<td>Independently recomputes reports and proves they tie out</td>
+</tr>
+<tr>
+<td><code>challenge-fixer</code></td>
+<td>Works only on <code>src/challenges/*</code>; returns source diffs, never test edits</td>
+</tr>
+<tr>
+<td><code>api-contract</code></td>
+<td>Keeps the API surface, Zod schemas, and OpenAPI in sync</td>
+</tr>
+<tr>
+<td><code>perf-probe</code></td>
+<td>Load-tests an endpoint and reports p50/p95 before and after</td>
+</tr>
+</tbody></table>
+<ul>
+<li><input disabled="" type="checkbox"> Write, for each agent, the exact prompt you used and the outcome — logged
+via <code>pnpm ai:log</code> with <code>--subagent &lt;name&gt;</code>.</li>
+<li><input disabled="" type="checkbox"> Demonstrate at least one agent <strong>catching a real defect</strong> and the fix
+that followed.</li>
+</ul>
+<h2>Format</h2>
+<p>An agent is a markdown file in <code>.opencode/agent/</code> with YAML frontmatter:</p>
+<pre><code class="language-markdown">---
+description: When to use this agent, in one sentence.
+mode: subagent
+temperature: 0.1
+tools:
+  write: false
+  edit: false
+  bash: true
+---
+
+The system prompt: scope, method, constraints, output contract.
+</code></pre>
+<h2>Definition of done for each agent</h2>
+<ol>
+<li><strong>Scoped</strong> — one concern, stated in the first line of the prompt.</li>
+<li><strong>Tooled</strong> — read-only unless it must write; no unnecessary <code>bash</code>.</li>
+<li><strong>Evidence-based</strong> — every claim ties to a file, command, or test output.</li>
+<li><strong>Contract</strong> — a fixed output shape a human can verify at a glance.</li>
+<li><strong>Used</strong> — at least one logged interaction referencing it.</li>
+<li><strong>Bounded</strong> — it says what it will <em>not</em> do (scope creep is a defect).</li>
+</ol>
+<h2>Anti-patterns</h2>
+<ul>
+<li>A &quot;do everything&quot; agent that owns the whole repo.</li>
+<li>An agent that claims success without pasting command output.</li>
+<li>An agent that edits tests to make them pass.</li>
+<li>Agents that duplicate each other&#39;s scope.</li>
+</ul>
+
+  </section>
+
+  <section class="doc" id="doc-9">
+    <p class="doc-kicker">Part 9 · <span class="mono">docs/SUBMISSION.md</span></p>
+    <h1>9. Submission template</h1>
+    <blockquote>
+<p>Fill this in. Replace every <code>TODO</code>. Reviewers read this first.</p>
+</blockquote>
+<p><strong>Candidate:</strong> TODO
+<strong>Date:</strong> TODO
+<strong>Time spent:</strong> TODO</p>
+<h2>Deployed URLs</h2>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>URL</th>
+<th><code>/health</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Dashboard</td>
+<td>TODO</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Ledger API</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Reporting API</td>
+<td>TODO</td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<p><strong>Cloudflare / custom domain:</strong> TODO (or &quot;not attempted&quot;)</p>
+<h2>What I changed</h2>
+<p>TODO — bullet the meaningful changes, grouped by goal (G0…G8). Link commits or files.</p>
+<h2>Challenge suite</h2>
+<pre><code>pnpm --filter @ledgerlab/ledger-api test:challenges
+# TODO paste the (green) output
+</code></pre>
+<ul>
+<li>Challenge A (trial balance <code>asOf</code>): TODO how you fixed it and why.</li>
+<li>Challenge B (void transition): TODO how you fixed it and why.</li>
+</ul>
+<h2>Database</h2>
+<ul>
+<li>Engine and version: TODO</li>
+<li>Migrations: TODO (command)</li>
+<li>Seeding: TODO (command)</li>
+<li>Why this engine: TODO</li>
+</ul>
+<h2>Deployment</h2>
+<ul>
+<li>Target: TODO (Render / AWS / GCP / Azure)</li>
+<li>Reproduce it: TODO (commands or blueprint path)</li>
+<li>Scaling: TODO (replicas / min-max instances)</li>
+<li>Secrets: TODO (where they live)</li>
+<li>Migrations as a deploy step: TODO</li>
+</ul>
+<h2>Security</h2>
+<ul>
+<li><code>INTERNAL_API_TOKEN</code> evidence: <code>curl -X POST https://…/api/internal/postings</code> → TODO status</li>
+<li>CORS: TODO (origin, and the preflight check result)</li>
+<li>Headers/HSTS: TODO (<code>curl -I</code> output)</li>
+<li>Rate limiting: TODO (limit + action)</li>
+<li>Known gaps: auth/multi-tenancy not built — TODO how you would add them</li>
+</ul>
+<h2>Cloudflare + TLD (bonus)</h2>
+<ul>
+<li>Domain: TODO</li>
+<li><code>dig +short</code> output: TODO</li>
+<li>TLS mode: TODO (Full strict) + screenshot/commit</li>
+<li>WAF rule and rate-limit rule: TODO (paste the expression)</li>
+<li><code>/api/internal/*</code> blocked at edge: TODO (evidence)</li>
+<li>Cache rules: TODO</li>
+</ul>
+<h2>AI usage</h2>
+<ul>
+<li>Entries in <code>docs/ai/prompt-log.jsonl</code>: TODO (count)</li>
+<li>A prompt I <strong>rejected</strong> and why: TODO</li>
+<li>How I verified AI output: TODO</li>
+</ul>
+<h2>Sub-agents</h2>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>File</th>
+<th>What it did</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TODO</td>
+<td><code>.opencode/agent/…</code></td>
+<td>TODO</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Defect a sub-agent caught: TODO</li>
+</ul>
+<h2>Verification</h2>
+<pre><code>pnpm format:check   # TODO PASS/FAIL
+pnpm typecheck      # TODO
+pnpm test           # TODO (n passed)
+pnpm build          # TODO
+pnpm ai:verify      # TODO
+</code></pre>
+<h2>What I skipped and why</h2>
+<p>TODO — be explicit. Underscoping is fine; hiding it is not.</p>
+<h2>If I had more time</h2>
+<p>TODO — ranked, with the first thing you would do next.</p>
+
+  </section>
+</body>
+</html>

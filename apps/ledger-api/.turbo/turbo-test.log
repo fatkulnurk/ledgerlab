@@ -6,10 +6,10 @@
  RUN  v3.2.7 /Users/ajilaksono/Projects/technical-test-microservice/apps/ledger-api
 
  ✓ src/__tests__/ledger-service.test.ts (6 tests) 11ms
- ✓ src/__tests__/ledger-api.test.ts (11 tests) 22ms
+ ✓ src/__tests__/ledger-api.test.ts (11 tests) 21ms
 
  Test Files  2 passed (2)
       Tests  17 passed (17)
-   Start at  11:45:33
-   Duration  926ms (transform 91ms, setup 0ms, collect 703ms, tests 34ms, environment 0ms, prepare 131ms)
+   Start at  11:49:16
+   Duration  831ms (transform 101ms, setup 0ms, collect 649ms, tests 32ms, environment 0ms, prepare 214ms)
 
