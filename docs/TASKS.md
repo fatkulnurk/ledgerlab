@@ -1,5 +1,8 @@
 # Tasks
 
+> Context: [`CLIENT-STORY.md`](CLIENT-STORY.md). You are taking **Warung Books**
+> from a vibe-coded prototype to production. The backlog below is the plan.
+
 Ordered backlog. Work top to bottom; stop and document when you run out of time.
 Every completed item should have evidence (a test, a command, or a screenshot).
 

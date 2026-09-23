@@ -37,6 +37,12 @@ const BUILD_DATE = new Date().toISOString().slice(0, 10);
 /** Guide structure: title + markdown file, in reading order. */
 const SECTIONS = [
   {
+    file: "docs/CLIENT-STORY.md",
+    title: "The client and the mandate",
+    blurb:
+      'Warung Books: how a vibe-coded app got 1,400 customers, why it must go production, and what "good" looks like.',
+  },
+  {
     file: "README.md",
     title: "Overview, goals and scoring",
     blurb: "What the scaffold is, goals G0–G8, the rubric and the submission checklist.",
@@ -133,11 +139,16 @@ const COVER = `
     </div>
     <h1 class="cover-title">Technical Test<br />Candidate Guide</h1>
     <p class="cover-lede">
-      A double-entry accounting scaffold: a React dashboard, a ledger API, a reporting API,
-      and a shared domain. Fix the planted defects, remove the UI slop, harden it for
-      production, and deploy it — with a logged AI prompt trail and your own sub-agents.
+      You are contracting for <strong>Warung Books</strong>, a seed-stage bookkeeping app whose
+      non-technical founder built it with an AI app builder in a weekend. It now has 1,400 paying
+      customers, an accountant about to review the books, and a bank partnership that hinges on a
+      security review. This repository is their codebase. Fix the planted defects, remove the UI
+      slop, move it onto a real database, harden it for production, and deploy it — with a logged AI
+      prompt trail and your own sub-agents.
     </p>
     <dl class="cover-meta">
+      <div><dt>Client scenario</dt><dd>Warung Books — micro-business bookkeeping</dd></div>
+      <div><dt>Stage</dt><dd>Seed · 1,400 customers · audit & bank review pending</dd></div>
       <div><dt>Document</dt><dd>Candidate guide</dd></div>
       <div><dt>Repository</dt><dd>technical-test-microservice</dd></div>
       <div><dt>Scaffold version</dt><dd>${VERSION}</dd></div>

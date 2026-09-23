@@ -11,6 +11,17 @@ sub-agents to do the work.
 > Read this file end to end before writing code. Then read
 > [`docs/TASKS.md`](docs/TASKS.md) for the ordered backlog.
 
+## The scenario
+
+You have been hired by **Warung Books**, a seed-stage bookkeeping app for
+Indonesian micro-businesses. Its non-technical founder built it with an AI app
+builder in a weekend; it now has 1,400 paying customers, an **accountant about to
+review the numbers**, a **bank partnership with a security review**, and a seed
+round in due diligence. This repository is their codebase. Every technical goal
+below exists because of something in that story.
+
+Read the full brief first: **[`docs/CLIENT-STORY.md`](docs/CLIENT-STORY.md)**.
+
 ---
 
 ## 1. What already works

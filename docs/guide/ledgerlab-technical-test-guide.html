@@ -117,11 +117,16 @@ blockquote p { margin: 0; }
     </div>
     <h1 class="cover-title">Technical Test<br />Candidate Guide</h1>
     <p class="cover-lede">
-      A double-entry accounting scaffold: a React dashboard, a ledger API, a reporting API,
-      and a shared domain. Fix the planted defects, remove the UI slop, harden it for
-      production, and deploy it — with a logged AI prompt trail and your own sub-agents.
+      You are contracting for <strong>Warung Books</strong>, a seed-stage bookkeeping app whose
+      non-technical founder built it with an AI app builder in a weekend. It now has 1,400 paying
+      customers, an accountant about to review the books, and a bank partnership that hinges on a
+      security review. This repository is their codebase. Fix the planted defects, remove the UI
+      slop, move it onto a real database, harden it for production, and deploy it — with a logged AI
+      prompt trail and your own sub-agents.
     </p>
     <dl class="cover-meta">
+      <div><dt>Client scenario</dt><dd>Warung Books — micro-business bookkeeping</dd></div>
+      <div><dt>Stage</dt><dd>Seed · 1,400 customers · audit & bank review pending</dd></div>
       <div><dt>Document</dt><dd>Candidate guide</dd></div>
       <div><dt>Repository</dt><dd>technical-test-microservice</dd></div>
       <div><dt>Scaffold version</dt><dd>0.1.0</dd></div>
@@ -142,13 +147,21 @@ blockquote p { margin: 0; }
       <li>
         <span class="num">1.</span>
         <span class="toc-body">
+          <span class="toc-title">The client and the mandate</span>
+          <span class="toc-blurb">Warung Books: how a vibe-coded app got 1,400 customers, why it must go production, and what "good" looks like.</span>
+          <span class="toc-file mono">docs/CLIENT-STORY.md</span>
+        </span>
+      </li>
+<li>
+        <span class="num">2.</span>
+        <span class="toc-body">
           <span class="toc-title">Overview, goals and scoring</span>
           <span class="toc-blurb">What the scaffold is, goals G0–G8, the rubric and the submission checklist.</span>
           <span class="toc-file mono">README.md</span>
         </span>
       </li>
 <li>
-        <span class="num">2.</span>
+        <span class="num">3.</span>
         <span class="toc-body">
           <span class="toc-title">Task backlog</span>
           <span class="toc-blurb">Ordered P0–P3 work: fix the defects, then quality, database, deploy and security.</span>
@@ -156,7 +169,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">3.</span>
+        <span class="num">4.</span>
         <span class="toc-body">
           <span class="toc-title">Design rules (anti-slop)</span>
           <span class="toc-blurb">The enforced UI rules: colour balance, icons, typography, surfaces, motion.</span>
@@ -164,7 +177,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">4.</span>
+        <span class="num">5.</span>
         <span class="toc-body">
           <span class="toc-title">Database</span>
           <span class="toc-blurb">The storage port, PostgreSQL wiring, and MySQL/SQLite/SQL Server options.</span>
@@ -172,7 +185,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">5.</span>
+        <span class="num">6.</span>
         <span class="toc-body">
           <span class="toc-title">Deployment</span>
           <span class="toc-blurb">Render/AWS/GCP/Azure runbooks and the definition of production-scale.</span>
@@ -180,7 +193,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">6.</span>
+        <span class="num">7.</span>
         <span class="toc-body">
           <span class="toc-title">Security</span>
           <span class="toc-blurb">Secrets, the service-to-service boundary, CORS, headers and rate limiting.</span>
@@ -188,7 +201,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">7.</span>
+        <span class="num">8.</span>
         <span class="toc-body">
           <span class="toc-title">AI usage policy</span>
           <span class="toc-blurb">How to log every AI prompt and what is scored; includes rejected prompts.</span>
@@ -196,7 +209,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">8.</span>
+        <span class="num">9.</span>
         <span class="toc-body">
           <span class="toc-title">Sub-agents</span>
           <span class="toc-blurb">Build at least three sub-agents and one of your own; scope and contracts.</span>
@@ -204,7 +217,7 @@ blockquote p { margin: 0; }
         </span>
       </li>
 <li>
-        <span class="num">9.</span>
+        <span class="num">10.</span>
         <span class="toc-body">
           <span class="toc-title">Submission template</span>
           <span class="toc-blurb">The fill-in-the-blanks document a reviewer reads first.</span>
@@ -215,8 +228,317 @@ blockquote p { margin: 0; }
   </section>
 
   <section class="doc" id="doc-1">
-    <p class="doc-kicker">Part 1 · <span class="mono">README.md</span></p>
-    <h1>1. Overview, goals and scoring</h1>
+    <p class="doc-kicker">Part 1 · <span class="mono">docs/CLIENT-STORY.md</span></p>
+    <h1>1. The client and the mandate</h1>
+    <blockquote>
+<p><strong>Scenario brief.</strong> This is fiction, but work it as a real engagement. Every
+technical goal in this test exists because of something on this page.</p>
+</blockquote>
+<h2>The client</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Company</strong></td>
+<td>Warung Books (PT Warung Buku Digital), Jakarta</td>
+</tr>
+<tr>
+<td><strong>Product</strong></td>
+<td>Bookkeeping and cash-flow tracking for Indonesian micro-businesses</td>
+</tr>
+<tr>
+<td><strong>Founder &amp; CEO</strong></td>
+<td>Kira Mandala — ex-café owner, not an engineer</td>
+</tr>
+<tr>
+<td><strong>Stage</strong></td>
+<td>Seed. 1,400 paying businesses, growing ~30% month over month</td>
+</tr>
+<tr>
+<td><strong>Throughput</strong></td>
+<td>~62,000 journal lines and Rp 4.1bn of recorded value per month</td>
+</tr>
+<tr>
+<td><strong>Handing over</strong></td>
+<td>The codebase extracted into <strong>this repository</strong></td>
+</tr>
+<tr>
+<td><strong>You are</strong></td>
+<td>The first senior engineer they have hired</td>
+</tr>
+</tbody></table>
+<h2>How it got here</h2>
+<p>Kira ran a small café and could not afford an accountant. One weekend she built
+the first version of Warung Books <strong>with an AI app builder</strong> — describing screens
+in plain language, pasting whatever the model produced, shipping it. It worked
+well enough that she shared it in a few WhatsApp groups for café owners. It
+spread. Within a year, 1,400 businesses depended on it to know whether they were
+making money.</p>
+<p>The growth was real. The engineering underneath it was not:</p>
+<ul>
+<li>The whole app is <strong>one service</strong> holding the database, the ledger, and the
+reporting logic. It falls over when the monthly reconciliation job runs.</li>
+<li>It uses a <strong>SQLite file on a single VM</strong>. There are no backups anyone has
+tested. If that VM dies, so does the company.</li>
+<li><code>CORS</code> is <code>*</code>. There is <strong>one shared API password in the repo</strong>, and it has
+been rotated exactly never.</li>
+<li>There are <strong>no automated tests</strong>. Kira fixes things by clicking around the UI.</li>
+<li>Nobody has ever checked whether the ledger&#39;s debits equal its credits. It is
+an accounting product; that is the one thing that must be true.</li>
+</ul>
+<p>Some of the mess has already been cleaned up in the extraction: money is stored
+as integer minor units, the ledger and reporting concerns are separated, and a
+storage port exists so the database can be swapped. Two real defects were left
+in <strong>on purpose</strong> — they are the ones that scare Kira&#39;s accountant.</p>
+<h2>What you are inheriting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom in the story</th>
+<th>Evidence in this repo</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&quot;Reports for a month bleed into the next&quot;</td>
+<td><code>buildTrialBalance</code> ignores <code>asOf</code> (<strong>Challenge A</strong>)</td>
+<td>Misstated financials; audit failure</td>
+</tr>
+<tr>
+<td>&quot;Entries get voided twice and the trail looks wrong&quot;</td>
+<td><code>voidJournalEntry</code> has no state guard (<strong>Challenge B</strong>)</td>
+<td>Audit-trail defect; looks like fraud</td>
+</tr>
+<tr>
+<td>&quot;It&#39;s a website, not an application&quot;</td>
+<td><code>packages/ui</code> is usable but inconsistent</td>
+<td>Customers don&#39;t trust money UIs that look like demos</td>
+</tr>
+<tr>
+<td>&quot;One VM, one file&quot;</td>
+<td><code>InMemoryLedgerRepository</code> is the default</td>
+<td>Total data loss on restart/host failure</td>
+</tr>
+<tr>
+<td>&quot;The repo has a password in it&quot;</td>
+<td>see <code>.env.example</code> and <code>docs/SECURITY.md</code></td>
+<td>Credential compromise</td>
+</tr>
+<tr>
+<td>&quot;Anyone can call the internal API&quot;</td>
+<td><code>/api/internal/*</code> is public unless the token is set</td>
+<td>Data exfiltration</td>
+</tr>
+<tr>
+<td>&quot;It fell over at 9pm on payday&quot;</td>
+<td>Single instance, no autoscaling, no health checks</td>
+<td>Revenue and reputation loss</td>
+</tr>
+<tr>
+<td>&quot;We can&#39;t answer the bank&#39;s security questionnaire&quot;</td>
+<td>No WAF, no rate limiting, no real domain, no headers</td>
+<td>The partnership dies</td>
+</tr>
+</tbody></table>
+<h2>Why now (the burning platform)</h2>
+<ol>
+<li><strong>An audit that matters.</strong> Kira&#39;s accounting partner, a licensed CPA, has
+agreed to review Warung Books&#39; output — but only if the trial balance is
+correct and the void trail is defensible. Review starts <strong>mid-October</strong>.</li>
+<li><strong>A bank partnership.</strong> A working-capital lender wants to embed Warung Books
+so their micro-business clients can qualify for loans. Their vendor security
+review requires: a managed database with tested backups, no secrets in source
+control, rate limiting, a WAF, HTTPS on a <strong>domain they recognise</strong> (not a
+<code>*.onrender.com</code> URL), and evidence of uptime monitoring. Targeting
+<strong>17 October 2026</strong>.</li>
+<li><strong>A seed round.</strong> Due diligence opens <strong>28 November 2026</strong>. Investors will
+ask for uptime numbers and a data-loss story.</li>
+<li><strong>Growth.</strong> Traffic tripled last quarter. The single instance is already
+hitting CPU limits during the nightly reconciliation.</li>
+</ol>
+<h2>The mandate</h2>
+<p>Take Warung Books from a vibe-coded prototype to something a bank and an
+accountant will trust — without breaking the 1,400 businesses already using it.</p>
+<p>That is exactly this repository&#39;s goals:</p>
+<table>
+<thead>
+<tr>
+<th>Mandate</th>
+<th>Goal</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fix the defects the accountant will find</td>
+<td><strong>G0, G1</strong></td>
+</tr>
+<tr>
+<td>Make the money UI trustworthy</td>
+<td><strong>G2</strong></td>
+</tr>
+<tr>
+<td>Move off a single in-memory/file store to a real, backed-up database</td>
+<td><strong>G3</strong></td>
+</tr>
+<tr>
+<td>Survive payday traffic; deploy reproducibly</td>
+<td><strong>G4</strong></td>
+</tr>
+<tr>
+<td>Pass the bank&#39;s security questionnaire</td>
+<td><strong>G5</strong></td>
+</tr>
+<tr>
+<td>A domain and edge the bank recognises</td>
+<td><strong>G6</strong></td>
+</tr>
+<tr>
+<td>Work in a way a future team can audit</td>
+<td><strong>G7, G8</strong></td>
+</tr>
+</tbody></table>
+<h2>What &quot;good&quot; looks like</h2>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Today</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Trial balance correctness</td>
+<td>Unverified</td>
+<td>Correct for any <code>asOf</code>; regression-tested</td>
+</tr>
+<tr>
+<td>Void transition</td>
+<td>Unguarded</td>
+<td><code>POSTED → VOID</code> only; <code>409</code> otherwise</td>
+</tr>
+<tr>
+<td>Availability</td>
+<td>Best effort</td>
+<td>99.9% with health-checked replicas</td>
+</tr>
+<tr>
+<td>p95 API latency</td>
+<td>Unknown</td>
+<td>&lt; 300 ms on the ledger reads</td>
+</tr>
+<tr>
+<td>Backups</td>
+<td>None tested</td>
+<td>Daily, with a <strong>tested restore</strong></td>
+</tr>
+<tr>
+<td>Secrets in git</td>
+<td>Yes</td>
+<td>Zero; all from a secret store</td>
+</tr>
+<tr>
+<td>Public internal API</td>
+<td>Yes</td>
+<td>Blocked at the edge</td>
+</tr>
+<tr>
+<td>Domain</td>
+<td>Provider subdomain</td>
+<td><code>ledgerlab.example.com</code> on a real TLD, behind Cloudflare</td>
+</tr>
+</tbody></table>
+<h2>Stakeholders and what they care about</h2>
+<table>
+<thead>
+<tr>
+<th>Who</th>
+<th>Cares about</th>
+<th>Sounds like</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Kira (CEO)</strong></td>
+<td>Not losing customers; hitting the bank date</td>
+<td>&quot;I don&#39;t need it pretty. I need it to not lose data.&quot;</td>
+</tr>
+<tr>
+<td><strong>CPA reviewer</strong></td>
+<td>The numbers tie out</td>
+<td>&quot;If debits don&#39;t equal credits, I can&#39;t sign off.&quot;</td>
+</tr>
+<tr>
+<td><strong>Bank security reviewer</strong></td>
+<td>Evidence, not intent</td>
+<td>&quot;Show me the WAF rule and the <code>/api/internal</code> verdict.&quot;</td>
+</tr>
+<tr>
+<td><strong>Ops (Budi)</strong></td>
+<td>Monthly close not breaking</td>
+<td>&quot;The 9pm reconciliation is where it dies.&quot;</td>
+</tr>
+<tr>
+<td><strong>Existing customers</strong></td>
+<td>The app keeps working</td>
+<td>&quot;My books from last year — are they still there?&quot;</td>
+</tr>
+<tr>
+<td><strong>Future engineers</strong></td>
+<td>Not inheriting another mess</td>
+<td>&quot;Why did this change? Where&#39;s the prompt log?&quot;</td>
+</tr>
+</tbody></table>
+<h2>Constraints</h2>
+<ul>
+<li><strong>Two weeks, one engineer.</strong> Underscope deliberately and document what you skipped.</li>
+<li><strong>Budget is real.</strong> Free/low tiers are fine; say what you chose and why.</li>
+<li><strong>Do not break existing customers.</strong> Migrate the data; keep the API contract.</li>
+<li><strong>Money integrity is non-negotiable.</strong> Never floats for money; never an
+unbalanced posted entry; the audit trail is append-only.</li>
+<li><strong>No downtime window longer than five minutes.</strong> Roll forward, not sideways.</li>
+<li><strong>The demo data is not real.</strong> Never paste customer data into an AI tool.</li>
+</ul>
+<h2>Risks</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A quick fix breaks an accounting invariant</td>
+<td>The challenge suite + port-level tests gate every change</td>
+</tr>
+<tr>
+<td>Migration loses or double-counts entries</td>
+<td>Idempotent seed/migrate; verify totals before and after</td>
+</tr>
+<tr>
+<td>Security work left until the end and rushed</td>
+<td>Start <code>INTERNAL_API_TOKEN</code> + CORS on day one</td>
+</tr>
+<tr>
+<td>Bank review needs evidence you did not capture</td>
+<td>Keep commands, <code>curl -I</code> output, WAF screenshots as you go</td>
+</tr>
+<tr>
+<td>Two weeks isn&#39;t enough</td>
+<td>Ship G0–G5 fully; treat Cloudflare/TLD as the stretch</td>
+</tr>
+</tbody></table>
+<h2>The one-sentence brief</h2>
+<p><strong>Make the ledger provably correct, the data durable, the service survive
+payday, and the whole thing defensible in a security review — then prove it with
+tests, evidence, and a prompt log.</strong></p>
+
+  </section>
+
+  <section class="doc" id="doc-2">
+    <p class="doc-kicker">Part 2 · <span class="mono">README.md</span></p>
+    <h1>2. Overview, goals and scoring</h1>
     <p>A <strong>double-entry accounting</strong> scaffold: a React dashboard, a <strong>ledger API</strong>, a
 <strong>reporting API</strong>, and shared domain packages in a pnpm/Turborepo monorepo.</p>
 <p>Your job is <strong>not</strong> to build a finished product. It is to take this scaffold,
@@ -227,6 +549,14 @@ sub-agents to do the work.</p>
 <p>Read this file end to end before writing code. Then read
 <a data-internal-link="true"><code>docs/TASKS.md</code></a> for the ordered backlog.</p>
 </blockquote>
+<h2>The scenario</h2>
+<p>You have been hired by <strong>Warung Books</strong>, a seed-stage bookkeeping app for
+Indonesian micro-businesses. Its non-technical founder built it with an AI app
+builder in a weekend; it now has 1,400 paying customers, an <strong>accountant about to
+review the numbers</strong>, a <strong>bank partnership with a security review</strong>, and a seed
+round in due diligence. This repository is their codebase. Every technical goal
+below exists because of something in that story.</p>
+<p>Read the full brief first: <strong><a data-internal-link="true"><code>docs/CLIENT-STORY.md</code></a></strong>.</p>
 <hr>
 <h2>1. What already works</h2>
 <table>
@@ -620,10 +950,14 @@ then G3–G5, then G6 if time allows. Underscope deliberately and document it.</
 
   </section>
 
-  <section class="doc" id="doc-2">
-    <p class="doc-kicker">Part 2 · <span class="mono">docs/TASKS.md</span></p>
-    <h1>2. Task backlog</h1>
-    <p>Ordered backlog. Work top to bottom; stop and document when you run out of time.
+  <section class="doc" id="doc-3">
+    <p class="doc-kicker">Part 3 · <span class="mono">docs/TASKS.md</span></p>
+    <h1>3. Task backlog</h1>
+    <blockquote>
+<p>Context: <a data-internal-link="true"><code>CLIENT-STORY.md</code></a>. You are taking <strong>Warung Books</strong>
+from a vibe-coded prototype to production. The backlog below is the plan.</p>
+</blockquote>
+<p>Ordered backlog. Work top to bottom; stop and document when you run out of time.
 Every completed item should have evidence (a test, a command, or a screenshot).</p>
 <p>Legend: <strong>P0</strong> blocks everything · <strong>P1</strong> core · <strong>P2</strong> required for full marks ·
 <strong>P3</strong> stretch.</p>
@@ -714,9 +1048,9 @@ currency or require an explicit FX rate.</li>
 
   </section>
 
-  <section class="doc" id="doc-3">
-    <p class="doc-kicker">Part 3 · <span class="mono">docs/DESIGN.md</span></p>
-    <h1>3. Design rules (anti-slop)</h1>
+  <section class="doc" id="doc-4">
+    <p class="doc-kicker">Part 4 · <span class="mono">docs/DESIGN.md</span></p>
+    <h1>4. Design rules (anti-slop)</h1>
     <p>The dashboard must look like a product, not a template. These rules are
 enforced; the <code>ui-unslop</code> sub-agent reviews against them.</p>
 <h2>Colour — 70 / 20 / 10</h2>
@@ -781,9 +1115,9 @@ focus. Semantic colours only for state: <code>emerald</code> (positive/balanced)
 
   </section>
 
-  <section class="doc" id="doc-4">
-    <p class="doc-kicker">Part 4 · <span class="mono">docs/DATABASE.md</span></p>
-    <h1>4. Database</h1>
+  <section class="doc" id="doc-5">
+    <p class="doc-kicker">Part 5 · <span class="mono">docs/DATABASE.md</span></p>
+    <h1>5. Database</h1>
     <p>The scaffold defines one storage port and ships two adapters. <strong>G3 requires you
 to run against a real database.</strong> PostgreSQL is wired end to end; <strong>MySQL,
 MariaDB, SQLite/libSQL, and SQL Server are all acceptable</strong> if you implement the
@@ -883,9 +1217,9 @@ Postgres) in a private network; not publicly reachable.</li>
 
   </section>
 
-  <section class="doc" id="doc-5">
-    <p class="doc-kicker">Part 5 · <span class="mono">docs/DEPLOYMENT.md</span></p>
-    <h1>5. Deployment</h1>
+  <section class="doc" id="doc-6">
+    <p class="doc-kicker">Part 6 · <span class="mono">docs/DEPLOYMENT.md</span></p>
+    <h1>6. Deployment</h1>
     <p>Deploy to <strong>at least one</strong> of Render / AWS / GCP / Azure, over HTTPS, with health
 checks and a managed database. Then, for bonus marks, put <strong>Cloudflare</strong> in front
 on a <strong>real TLD</strong>.</p>
@@ -1020,9 +1354,9 @@ what it costs.</p>
 
   </section>
 
-  <section class="doc" id="doc-6">
-    <p class="doc-kicker">Part 6 · <span class="mono">docs/SECURITY.md</span></p>
-    <h1>6. Security</h1>
+  <section class="doc" id="doc-7">
+    <p class="doc-kicker">Part 7 · <span class="mono">docs/SECURITY.md</span></p>
+    <h1>7. Security</h1>
     <p>Deploying an accounting product means the data must be trustworthy and private.
 This checklist is what G5 is graded on. Each item needs evidence — a config, a
 command, or a screenshot.</p>
@@ -1099,9 +1433,9 @@ Summary: proxied DNS, TLS Full (strict), WAF managed rules, rate limiting,
 
   </section>
 
-  <section class="doc" id="doc-7">
-    <p class="doc-kicker">Part 7 · <span class="mono">docs/AI-USAGE.md</span></p>
-    <h1>7. AI usage policy</h1>
+  <section class="doc" id="doc-8">
+    <p class="doc-kicker">Part 8 · <span class="mono">docs/AI-USAGE.md</span></p>
+    <h1>8. AI usage policy</h1>
     <p>AI assistance is <strong>allowed and expected</strong>. This test is not about whether you use
 AI — it is about whether you can direct it, verify it, and explain your choices.</p>
 <h2>The one rule</h2>
@@ -1194,9 +1528,9 @@ into any AI tool. Use the demo data in <code>packages/shared/src/seed.ts</code>.
 
   </section>
 
-  <section class="doc" id="doc-8">
-    <p class="doc-kicker">Part 8 · <span class="mono">docs/SUBAGENTS.md</span></p>
-    <h1>8. Sub-agents</h1>
+  <section class="doc" id="doc-9">
+    <p class="doc-kicker">Part 9 · <span class="mono">docs/SUBAGENTS.md</span></p>
+    <h1>9. Sub-agents</h1>
     <p>You are required to <strong>build your own sub-agents</strong> and use them for the work
 (G8). Four starter agents are provided in <code>.opencode/agent/</code>; extend or replace
 them. An agent you actually used and can demonstrate scores; a folder of
@@ -1312,9 +1646,9 @@ The system prompt: scope, method, constraints, output contract.
 
   </section>
 
-  <section class="doc" id="doc-9">
-    <p class="doc-kicker">Part 9 · <span class="mono">docs/SUBMISSION.md</span></p>
-    <h1>9. Submission template</h1>
+  <section class="doc" id="doc-10">
+    <p class="doc-kicker">Part 10 · <span class="mono">docs/SUBMISSION.md</span></p>
+    <h1>10. Submission template</h1>
     <blockquote>
 <p>Fill this in. Replace every <code>TODO</code>. Reviewers read this first.</p>
 </blockquote>

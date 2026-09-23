@@ -5,10 +5,10 @@
 
  RUN  v3.2.7 /Users/ajilaksono/Projects/technical-test-microservice/packages/shared
 
- ✓ src/money.test.ts (14 tests) 17ms
+ ✓ src/money.test.ts (14 tests) 19ms
 
  Test Files  1 passed (1)
       Tests  14 passed (14)
-   Start at  11:49:16
-   Duration  534ms (transform 37ms, setup 0ms, collect 32ms, tests 17ms, environment 0ms, prepare 69ms)
+   Start at  11:51:39
+   Duration  592ms (transform 33ms, setup 0ms, collect 33ms, tests 19ms, environment 0ms, prepare 81ms)
 
