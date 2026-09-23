@@ -1,0 +1,28 @@
+{
+  "name": "ledgerlab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Technical test scaffold: accounting SaaS with a dashboard, a double-entry ledger service, and a reporting service.",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "ai:log": "node scripts/log-ai-prompt.mjs",
+    "ai:verify": "node scripts/verify-ai-log.mjs",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "prettier": "^3.4.2",
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.3"
+  }
+}

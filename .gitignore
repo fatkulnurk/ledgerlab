@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# local data
+data/
+*.sqlite
+*.db
+
+# logs / AI prompt log (candidate output is committed, raw transcripts are not)
+docs/ai/transcripts/
+
+# test / coverage
+coverage/
+.nyc_output/
+
+# editors / os
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# cloud
+.terraform/
+*.tfstate
+*.tfstate.*

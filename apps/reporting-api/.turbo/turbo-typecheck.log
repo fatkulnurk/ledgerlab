@@ -1,0 +1,4 @@
+
+> @ledgerlab/reporting-api@0.1.0 typecheck /Users/ajilaksono/Projects/technical-test-microservice/apps/reporting-api
+> tsc --noEmit
+

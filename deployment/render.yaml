@@ -1,0 +1,88 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy with: Render Dashboard -> New -> Blueprint -> point at this repo.
+#
+# This provisions:
+#   - PostgreSQL (managed)
+#   - ledger-api    (Docker, public)
+#   - reporting-api (Docker, public; calls ledger-api over the private network)
+#   - web           (static SPA)
+#
+# After the first deploy, set the two `sync: false` values in the dashboard.
+
+databases:
+  - name: ledgerlab-db
+    databaseName: ledgerlab
+    user: ledgerlab
+    plan: basic-256mb
+    postgresMajorVersion: "16"
+
+services:
+  # ---------------------------------------------------------------- ledger API
+  - type: web
+    name: ledgerlab-ledger-api
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./deployment/Dockerfile.ledger-api
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    disk: []
+    envVars:
+      - key: LEDGER_API_PORT
+        value: 4001
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ledgerlab-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false # set to your dashboard origin, e.g. https://ledgerlab.example.com
+      - key: INTERNAL_API_TOKEN
+        generateValue: true
+
+  # ------------------------------------------------------------- reporting API
+  - type: web
+    name: ledgerlab-reporting-api
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./deployment/Dockerfile.reporting-api
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: REPORTING_API_PORT
+        value: 4002
+      # Private-network URL; Render resolves service names inside the region.
+      - key: LEDGER_API_URL
+        value: http://ledgerlab-ledger-api:4001
+      - key: INTERNAL_API_TOKEN
+        fromService:
+          type: web
+          name: ledgerlab-ledger-api
+          envVarKey: INTERNAL_API_TOKEN
+      - key: CORS_ORIGINS
+        sync: false
+
+  # --------------------------------------------------------------- dashboard
+  - type: web
+    name: ledgerlab-web
+    runtime: static
+    buildCommand: corepack enable && pnpm install && pnpm --filter @ledgerlab/web build
+    staticPublishPath: ./apps/web/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    envVars:
+      - key: VITE_LEDGER_API_URL
+        sync: false # e.g. https://ledgerlab-ledger-api.onrender.com
+      - key: VITE_REPORTING_API_URL
+        sync: false # e.g. https://ledgerlab-reporting-api.onrender.com

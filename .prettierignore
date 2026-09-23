@@ -1,0 +1,9 @@
+pnpm-lock.yaml
+dist
+node_modules
+.turbo
+coverage
+docs/ai/prompt-log.jsonl
+docs/AI-PROMPT-LOG.md
+deployment/**/*.yaml
+deployment/**/*.json

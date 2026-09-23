@@ -1,0 +1,48 @@
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { logger } from "hono/logger";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
+import { AppError } from "@ledgerlab/shared";
+import type { ReportingService } from "./services/reporting-service";
+import { healthRoutes } from "./routes/health";
+import { reportRoutes } from "./routes/reports";
+
+export interface CreateAppOptions {
+  service: ReportingService;
+  corsOrigins?: string[];
+}
+
+export function createReportingApp({ service, corsOrigins = ["*"] }: CreateAppOptions): Hono {
+  const app = new Hono();
+
+  if (process.env.NODE_ENV !== "test") app.use("*", logger());
+  app.use(
+    "*",
+    cors({
+      origin: (origin) =>
+        corsOrigins.includes("*") ? (origin ?? "*") : corsOrigins.includes(origin) ? origin : null,
+      allowMethods: ["GET", "OPTIONS"],
+      allowHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
+
+  app.route("/", healthRoutes("reporting-api"));
+  app.route("/api/reports", reportRoutes(service));
+
+  app.notFound((c) =>
+    c.json({ error: { code: "NOT_FOUND", message: `Route ${c.req.method} ${c.req.path} not found` } }, 404),
+  );
+
+  app.onError((err, c) => {
+    if (err instanceof AppError) {
+      return c.json(
+        { error: { code: err.code, message: err.message, details: err.details } },
+        err.status as ContentfulStatusCode,
+      );
+    }
+    console.error("[reporting-api] unhandled error:", err);
+    return c.json({ error: { code: "INTERNAL_ERROR", message: "Internal server error" } }, 500);
+  });
+
+  return app;
+}

@@ -1,0 +1,45 @@
+# Declarative spec for the ledger API Container App.
+# Apply with: az containerapp update -g RG -n ledger-api --yaml deployment/azure/containerapp.yaml
+location: southeastasia
+name: ledger-api
+properties:
+  managedEnvironmentId: /subscriptions/SUB_ID/resourceGroups/ledgerlab-rg/providers/Microsoft.App/managedEnvironments/ledgerlab-env
+  configuration:
+    ingress:
+      external: true
+      targetPort: 4001
+      transport: http
+      allowInsecure: false
+    secrets:
+      - name: database-url
+        keyVaultUrl: https://ledgerlab-kv.vault.azure.net/secrets/database-url
+        identity: system
+      - name: internal-api-token
+        keyVaultUrl: https://ledgerlab-kv.vault.azure.net/secrets/internal-api-token
+        identity: system
+  template:
+    containers:
+      - name: ledger-api
+        image: ledgerlabacr.azurecr.io/ledger-api:latest
+        resources:
+          cpu: 0.5
+          memory: 1Gi
+        env:
+          - name: LEDGER_API_PORT
+            value: "4001"
+          - name: CORS_ORIGINS
+            value: https://ledgerlab.example.com
+          - name: DATABASE_URL
+            secretRef: database-url
+          - name: INTERNAL_API_TOKEN
+            secretRef: internal-api-token
+        probes:
+          - type: Liveness
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 10
+            periodSeconds: 30
+    scale:
+      minReplicas: 1
+      maxReplicas: 10

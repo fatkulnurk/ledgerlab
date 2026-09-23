@@ -1,0 +1,4 @@
+
+> @ledgerlab/ui@0.1.0 typecheck /Users/ajilaksono/Projects/technical-test-microservice/packages/ui
+> tsc --noEmit
+

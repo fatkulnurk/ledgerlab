@@ -1,0 +1,14 @@
+
+> @ledgerlab/shared@0.1.0 test /Users/ajilaksono/Projects/technical-test-microservice/packages/shared
+> vitest run
+
+
+ RUN  v3.2.7 /Users/ajilaksono/Projects/technical-test-microservice/packages/shared
+
+ ✓ src/money.test.ts (14 tests) 20ms
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  11:45:33
+   Duration  611ms (transform 29ms, setup 0ms, collect 31ms, tests 20ms, environment 0ms, prepare 62ms)
+

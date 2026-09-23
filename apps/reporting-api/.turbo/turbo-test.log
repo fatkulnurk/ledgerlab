@@ -1,0 +1,14 @@
+
+> @ledgerlab/reporting-api@0.1.0 test /Users/ajilaksono/Projects/technical-test-microservice/apps/reporting-api
+> vitest run
+
+
+ RUN  v3.2.7 /Users/ajilaksono/Projects/technical-test-microservice/apps/reporting-api
+
+ ✓ src/__tests__/reporting.test.ts (9 tests) 18ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  11:45:33
+   Duration  671ms (transform 112ms, setup 0ms, collect 183ms, tests 18ms, environment 0ms, prepare 77ms)
+
