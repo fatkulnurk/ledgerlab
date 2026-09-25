@@ -29,6 +29,10 @@ export interface ListJournalEntriesQuery {
   page: number;
   pageSize: number;
   status?: EntryStatus;
+  /** Inclusive lower bound on the entry date (YYYY-MM-DD). */
+  from?: string;
+  /** Inclusive upper bound on the entry date (YYYY-MM-DD). */
+  to?: string;
 }
 
 /**
@@ -43,6 +47,8 @@ export interface LedgerRepository {
   getAccountById(id: string): Promise<Account | undefined>;
   getAccountByCode(code: string): Promise<Account | undefined>;
   createAccount(input: CreateAccountInput): Promise<Account>;
+  /** Activate or deactivate an account. Returns undefined when it does not exist. */
+  setAccountActive(id: string, isActive: boolean): Promise<Account | undefined>;
 
   listJournalEntries(query: ListJournalEntriesQuery): Promise<Paginated<JournalEntry>>;
   getJournalEntry(id: string): Promise<JournalEntry | undefined>;

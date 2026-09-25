@@ -90,6 +90,32 @@ describe("ReportingService", () => {
     const summary = await new ReportingService(source).dashboard("2026-01-31");
     expect(summary.cashMinor).toBe(3_800);
   });
+
+  it("excludes void entries from the income statement and balance sheet", async () => {
+    const source: PostingSource = {
+      listPostings: async () => [
+        ...POSTINGS,
+        posting(
+          "je_void_rev",
+          "2026-01-20",
+          "acct_rev",
+          "4000",
+          "Service Revenue",
+          "REVENUE",
+          -9_999,
+          "VOID",
+        ),
+        posting("je_void_cash", "2026-01-20", "acct_cash", "1000", "Cash", "ASSET", 9_999, "VOID"),
+      ],
+    };
+    const svc = new ReportingService(source);
+    const income = await svc.incomeStatement("2026-01-01", "2026-01-31");
+    expect(income.totalRevenueMinor).toBe(2_500);
+
+    const sheet = await svc.balanceSheet("2026-12-31");
+    expect(sheet.totalAssetsMinor).toBe(6_300);
+    expect(sheet.outOfBalanceMinor).toBe(0);
+  });
 });
 
 describe("reporting-api routes", () => {

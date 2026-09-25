@@ -12,6 +12,7 @@ import {
   ConflictError,
   NotFoundError,
   SEED_ACCOUNTS,
+  ValidationError,
   buildSeedEntries,
   createId,
   isBalanced,
@@ -121,10 +122,22 @@ export class InMemoryLedgerRepository implements LedgerRepository {
     return account;
   }
 
+  async setAccountActive(id: string, isActive: boolean): Promise<Account | undefined> {
+    const account = this.accounts.get(id);
+    if (!account) return undefined;
+    const updated: Account = { ...account, isActive };
+    this.accounts.set(id, updated);
+    return updated;
+  }
+
   async listJournalEntries(query: ListJournalEntriesQuery): Promise<Paginated<JournalEntry>> {
     const all = [...this.entries.values()]
       .filter((entry) => !query.status || entry.status === query.status)
-      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+      .filter((entry) => !query.from || entry.date >= query.from)
+      .filter((entry) => !query.to || entry.date <= query.to)
+      // Newest first, with createdAt as a stable tiebreaker so pagination
+      // membership matches the Postgres adapter.
+      .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.createdAt.localeCompare(a.createdAt)));
     const start = (query.page - 1) * query.pageSize;
     return {
       data: all.slice(start, start + query.pageSize),
@@ -146,8 +159,12 @@ export class InMemoryLedgerRepository implements LedgerRepository {
       );
     }
     for (const line of input.lines) {
-      if (!this.accounts.has(line.accountId)) {
+      const account = this.accounts.get(line.accountId);
+      if (!account) {
         throw new NotFoundError(`Account ${line.accountId} not found`);
+      }
+      if (!account.isActive) {
+        throw new ValidationError(`Account ${account.code} is inactive and cannot be posted to`);
       }
     }
 
@@ -179,6 +196,9 @@ export class InMemoryLedgerRepository implements LedgerRepository {
   async voidJournalEntry(id: string): Promise<JournalEntry | undefined> {
     const entry = this.entries.get(id);
     if (!entry) return undefined;
+    if (entry.status !== "POSTED") {
+      throw new ConflictError(`Journal entry ${id} is ${entry.status}; only POSTED entries can be voided`);
+    }
     const updated: JournalEntry = { ...entry, status: "VOID" };
     this.entries.set(id, updated);
     return updated;

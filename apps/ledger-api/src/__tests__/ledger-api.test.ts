@@ -157,4 +157,106 @@ describe("ledger-api", () => {
     const res = await app.request("/api/journal-entries?page=0");
     expect(res.status).toBe(400);
   });
+
+  it("rejects posting to a deactivated account with 400", async () => {
+    const accounts = await listAccounts(app);
+    const cash = accounts.find((a) => a.code === "1000")!;
+    const revenue = accounts.find((a) => a.code === "4000")!;
+
+    const patch = await app.request(`/api/accounts/${cash.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ isActive: false }),
+    });
+    expect(patch.status).toBe(200);
+    expect((await json<{ data: Account }>(patch)).data.isActive).toBe(false);
+
+    const res = await postJson(app, "/api/journal-entries", {
+      date: "2026-01-15",
+      memo: "inactive account",
+      lines: [
+        { accountId: cash.id, amountMinor: 100 },
+        { accountId: revenue.id, amountMinor: -100 },
+      ],
+    });
+    expect(res.status).toBe(400);
+    expect((await json<ErrorBody>(res)).error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("rejects an entry dated in a closed period with 400", async () => {
+    const closedApp = createLedgerApp({
+      service: new LedgerService(new InMemoryLedgerRepository({ seed: true }), {
+        closedThrough: "2026-06-30",
+      }),
+    });
+    const accounts = await listAccounts(closedApp);
+    const cash = accounts.find((a) => a.code === "1000")!;
+    const revenue = accounts.find((a) => a.code === "4000")!;
+
+    const res = await postJson(closedApp, "/api/journal-entries", {
+      date: "2026-06-15",
+      memo: "closed",
+      lines: [
+        { accountId: cash.id, amountMinor: 100 },
+        { accountId: revenue.id, amountMinor: -100 },
+      ],
+    });
+    expect(res.status).toBe(400);
+    expect((await json<ErrorBody>(res)).error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("filters journal entries by date range", async () => {
+    const accounts = await listAccounts(app);
+    const cash = accounts.find((a) => a.code === "1000")!;
+    const revenue = accounts.find((a) => a.code === "4000")!;
+    const lines = [
+      { accountId: cash.id, amountMinor: 100 },
+      { accountId: revenue.id, amountMinor: -100 },
+    ];
+    await postJson(app, "/api/journal-entries", { date: "2026-03-15", memo: "March", lines });
+    await postJson(app, "/api/journal-entries", { date: "2026-04-15", memo: "April", lines });
+
+    const res = await app.request("/api/journal-entries?from=2026-03-01&to=2026-03-31");
+    expect(res.status).toBe(200);
+    const body = await json<Paginated<JournalEntry>>(res);
+    expect(body.data.some((entry) => entry.memo === "March")).toBe(true);
+    expect(body.data.some((entry) => entry.memo === "April")).toBe(false);
+    expect(body.data.every((entry) => entry.date >= "2026-03-01" && entry.date <= "2026-03-31")).toBe(true);
+  });
+
+  it("rejects a malformed date filter with 400", async () => {
+    const res = await app.request("/api/journal-entries?from=03-2026");
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects an impossible calendar date with 400", async () => {
+    const accounts = await listAccounts(app);
+    const cash = accounts.find((a) => a.code === "1000")!;
+    const revenue = accounts.find((a) => a.code === "4000")!;
+
+    const res = await postJson(app, "/api/journal-entries", {
+      date: "2026-06-31",
+      memo: "impossible date",
+      lines: [
+        { accountId: cash.id, amountMinor: 100 },
+        { accountId: revenue.id, amountMinor: -100 },
+      ],
+    });
+    expect(res.status).toBe(400);
+    expect((await json<ErrorBody>(res)).error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("refuses to void an entry inside a closed period", async () => {
+    const closedApp = createLedgerApp({
+      service: new LedgerService(new InMemoryLedgerRepository({ seed: true }), {
+        closedThrough: "2026-12-31",
+      }),
+    });
+    const list = await json<Paginated<JournalEntry>>(await closedApp.request("/api/journal-entries"));
+    const target = list.data[0]!;
+
+    const res = await closedApp.request(`/api/journal-entries/${target.id}/void`, { method: "POST" });
+    expect(res.status).toBe(400);
+    expect((await json<ErrorBody>(res)).error.code).toBe("VALIDATION_ERROR");
+  });
 });
