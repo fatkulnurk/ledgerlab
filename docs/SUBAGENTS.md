@@ -26,8 +26,10 @@ of done. Good sub-agents:
 
 ## What you must do
 
-- [ ] Keep **at least three** working agents (they may be the starters, improved).
-- [ ] Add **at least one** agent of your own that fits your workflow. Likely candidates:
+- [x] Keep **at least three** working agents (they may be the starters, improved).
+      Kept and used: `ledger-architect`, `ui-unslop`, `test-runner`, `deploy-security`.
+- [x] Add **at least one** agent of your own that fits your workflow.
+      Added: `db-migrator` and `challenge-fixer`.
 
 | Suggested agent      | Job                                                                        |
 | -------------------- | -------------------------------------------------------------------------- |
@@ -37,10 +39,30 @@ of done. Good sub-agents:
 | `api-contract`       | Keeps the API surface, Zod schemas, and OpenAPI in sync                    |
 | `perf-probe`         | Load-tests an endpoint and reports p50/p95 before and after                |
 
-- [ ] Write, for each agent, the exact prompt you used and the outcome — logged
-      via `pnpm ai:log` with `--subagent <name>`.
-- [ ] Demonstrate at least one agent **catching a real defect** and the fix
-      that followed.
+- [x] Write, for each agent, the exact prompt you used and the outcome — logged
+      via `pnpm ai:log` with `--subagent <name>` (see `docs/AI-PROMPT-LOG.md`).
+- [x] Demonstrate at least one agent **catching a real defect** and the fix
+      that followed (below).
+
+## Agents used on this submission
+
+| Agent              | Used for                                               | Evidence (subagent in log)                |
+| ------------------ | ------------------------------------------------------ | ----------------------------------------- |
+| `ledger-architect` | Reviewed the double-entry invariant and the void guard | `pnpm ai:log --subagent ledger-architect` |
+| `ui-unslop`        | Un-slopped the dashboard against `docs/DESIGN.md`      | `--subagent ui-unslop`                    |
+| `test-runner`      | Ran typecheck/test/build and reported failures         | `--subagent test-runner`                  |
+| `deploy-security`  | Hardened and verified the deploy and security controls | `--subagent deploy-security`              |
+| `db-migrator`      | Migrations, seeding, pool, adapter parity (own agent)  | `--subagent db-migrator`                  |
+| `challenge-fixer`  | Scoped to `src/challenges/*`, source-only fixes (own)  | `--subagent challenge-fixer`              |
+
+### Defect caught by an agent
+
+`ledger-architect` audited the correctness changes and caught **9 real defects**,
+including a high-severity one: the closed-period guard compared raw strings, so
+an impossible date like `2026-06-31` slipped past `CLOSED_THROUGH=2026-06-30`.
+The fixes (real-calendar-date validation, void blocked in a closed period,
+adapter-level inactive-account checks, trusted-proxy rate-limit keying, and
+more) are logged under `--subagent db-migrator`, each with a regression test.
 
 ## Format
 
