@@ -1,5 +1,21 @@
 import { Fragment, useState } from "react";
-import { Badge, Button, Card, PageHeader, TBody, TD, TH, THead, TR, TableWrap, cn } from "@ledgerlab/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  Field,
+  Input,
+  PageHeader,
+  Select,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  TableWrap,
+  cn,
+} from "@ledgerlab/ui";
 import { Async } from "../components/states";
 import { api } from "../lib/api";
 import { useAsync } from "../lib/useAsync";
@@ -9,12 +25,36 @@ const PAGE_SIZE = 20;
 
 export function LedgerPage() {
   const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
   const [expanded, setExpanded] = useState<string | undefined>(undefined);
   const [busyId, setBusyId] = useState<string | undefined>(undefined);
   const { data, loading, error, reload } = useAsync(
-    () => api.ledger.listJournalEntries({ page, pageSize: PAGE_SIZE }),
-    [page],
+    () =>
+      api.ledger.listJournalEntries({
+        page,
+        pageSize: PAGE_SIZE,
+        status: status || undefined,
+        from: from || undefined,
+        to: to || undefined,
+      }),
+    [page, status, from, to],
   );
+
+  const hasFilters = Boolean(status || from || to);
+
+  function changeFilter(setter: (value: string) => void, value: string) {
+    setter(value);
+    setPage(1);
+  }
+
+  function clearFilters() {
+    setStatus("");
+    setFrom("");
+    setTo("");
+    setPage(1);
+  }
 
   async function voidEntry(id: string) {
     if (!window.confirm("Void this entry? It will no longer affect reports.")) return;
@@ -34,7 +74,59 @@ export function LedgerPage() {
       <PageHeader title="General ledger" description="Every posted journal entry, newest first." />
 
       <Card padded={false}>
-        <Async loading={loading} error={error} data={data} onRetry={reload}>
+        <div className="flex flex-wrap items-end gap-4 border-b border-zinc-200 px-4 py-3">
+          <Field label="Status" htmlFor="filter-status" className="w-40">
+            <Select
+              id="filter-status"
+              value={status}
+              onChange={(e) => changeFilter(setStatus, e.target.value)}
+            >
+              <option value="">All statuses</option>
+              <option value="POSTED">Posted</option>
+              <option value="VOID">Void</option>
+              <option value="DRAFT">Draft</option>
+            </Select>
+          </Field>
+          <Field label="From" htmlFor="filter-from" className="w-44">
+            <Input
+              id="filter-from"
+              type="date"
+              value={from}
+              onChange={(e) => changeFilter(setFrom, e.target.value)}
+            />
+          </Field>
+          <Field label="To" htmlFor="filter-to" className="w-44">
+            <Input
+              id="filter-to"
+              type="date"
+              value={to}
+              onChange={(e) => changeFilter(setTo, e.target.value)}
+            />
+          </Field>
+          <Button type="button" onClick={clearFilters} disabled={!hasFilters}>
+            Clear
+          </Button>
+        </div>
+
+        <Async
+          loading={loading}
+          error={error}
+          data={data}
+          onRetry={reload}
+          isEmpty={(result) => result.data.length === 0}
+          empty={
+            <div className="p-4">
+              <EmptyState
+                title={hasFilters ? "No entries match these filters" : "No journal entries yet"}
+                description={
+                  hasFilters
+                    ? "Try widening the date range or clearing the status filter."
+                    : "Entries you post will appear here."
+                }
+              />
+            </div>
+          }
+        >
           {(result) => (
             <>
               <TableWrap>
@@ -63,8 +155,10 @@ export function LedgerPage() {
                           <TD>
                             <button
                               type="button"
+                              aria-expanded={isOpen}
+                              aria-controls={`entry-lines-${entry.id}`}
                               onClick={() => setExpanded(isOpen ? undefined : entry.id)}
-                              className="text-left font-medium text-zinc-900 hover:text-indigo-700"
+                              className="rounded-sm text-left font-medium text-zinc-900 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                               {entry.memo}
                             </button>
@@ -99,15 +193,21 @@ export function LedgerPage() {
                           </TD>
                         </TR>
                         {isOpen ? (
-                          <TR className="bg-zinc-50/70">
+                          <TR id={`entry-lines-${entry.id}`} className="bg-zinc-50/70">
                             <TD colSpan={6} className="p-0">
                               <div className="px-4 py-3">
                                 <table className="w-full text-sm">
                                   <thead>
                                     <tr className="text-xs uppercase tracking-wide text-zinc-500">
-                                      <th className="py-1 text-left font-medium">Account</th>
-                                      <th className="py-1 text-right font-medium">Debit</th>
-                                      <th className="py-1 text-right font-medium">Credit</th>
+                                      <th scope="col" className="py-1 text-left font-medium">
+                                        Account
+                                      </th>
+                                      <th scope="col" className="py-1 text-right font-medium">
+                                        Debit
+                                      </th>
+                                      <th scope="col" className="py-1 text-right font-medium">
+                                        Credit
+                                      </th>
                                     </tr>
                                   </thead>
                                   <tbody>

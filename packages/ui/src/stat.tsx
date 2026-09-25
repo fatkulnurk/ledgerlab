@@ -11,11 +11,12 @@ export interface StatProps {
 
 /**
  * A single key figure. Deliberately has no icon: the label and the number are
- * the information. Numbers use tabular figures so columns line up.
+ * the information. Money uses tabular figures and is right-aligned so figures
+ * line up across cards.
  */
 export function Stat({ label, value, hint, tone = "neutral", className }: StatProps) {
   return (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className={cn("flex flex-col items-end gap-1 text-right", className)}>
       <span className="text-xs font-medium uppercase tracking-wide text-zinc-500">{label}</span>
       <span
         className={cn(

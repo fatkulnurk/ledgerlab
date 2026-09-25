@@ -38,7 +38,18 @@ async function request<T>(baseUrl: string, path: string, init?: RequestInit): Pr
   }
 
   const text = await response.text();
-  const body = text ? (JSON.parse(text) as unknown) : undefined;
+  let body: unknown;
+  if (text) {
+    try {
+      body = JSON.parse(text);
+    } catch {
+      throw new ApiError(
+        response.status,
+        "INVALID_RESPONSE",
+        `Unexpected response from ${baseUrl}. The service did not return JSON.`,
+      );
+    }
+  }
 
   if (!response.ok) {
     const parsed = body as { error?: { code?: string; message?: string; details?: unknown } } | undefined;
@@ -72,10 +83,24 @@ export const api = {
           body: JSON.stringify(input),
         })
       ).data,
-    listJournalEntries: (params: { page?: number; pageSize?: number; status?: string } = {}) =>
+    listJournalEntries: (
+      params: {
+        page?: number;
+        pageSize?: number;
+        status?: string;
+        from?: string;
+        to?: string;
+      } = {},
+    ) =>
       request<Paginated<JournalEntry>>(
         LEDGER_URL,
-        `/api/journal-entries${query({ page: params.page, pageSize: params.pageSize, status: params.status })}`,
+        `/api/journal-entries${query({
+          page: params.page,
+          pageSize: params.pageSize,
+          status: params.status,
+          from: params.from,
+          to: params.to,
+        })}`,
       ),
     createJournalEntry: async (input: CreateJournalEntryInput) =>
       (

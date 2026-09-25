@@ -4,6 +4,7 @@ import {
   Badge,
   Button,
   Card,
+  EmptyState,
   Field,
   Input,
   PageHeader,
@@ -91,7 +92,21 @@ export function AccountsPage() {
       </Card>
 
       <Card title="Accounts" padded={false}>
-        <Async loading={loading} error={error} data={data} onRetry={reload}>
+        <Async
+          loading={loading}
+          error={error}
+          data={data}
+          onRetry={reload}
+          isEmpty={(accounts) => accounts.length === 0}
+          empty={
+            <div className="p-4">
+              <EmptyState
+                title="No accounts yet"
+                description="Add your first account above to start recording journal entries."
+              />
+            </div>
+          }
+        >
           {(accounts) => (
             <TableWrap>
               <THead>
@@ -109,7 +124,7 @@ export function AccountsPage() {
                     <TD className="font-mono text-xs text-zinc-500">{account.code}</TD>
                     <TD className="font-medium text-zinc-900">{account.name}</TD>
                     <TD>
-                      <Badge tone="accent">{account.type.toLowerCase()}</Badge>
+                      <Badge tone="neutral">{account.type.toLowerCase()}</Badge>
                     </TD>
                     <TD muted>{account.currency}</TD>
                     <TD muted>{account.isActive ? "active" : "inactive"}</TD>
