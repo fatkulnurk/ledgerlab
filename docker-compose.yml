@@ -1,0 +1,28 @@
+# Local development dependencies for LedgerLab.
+#
+#   docker compose up -d db      # start Postgres 16 on localhost:5432
+#   docker compose down          # stop (data stays in the named volume)
+#   docker compose down -v       # stop and delete the data volume
+#
+# The apps themselves run with pnpm (`pnpm dev`), not in Compose, so you get
+# fast reloads. Point DATABASE_URL at this database to run against Postgres.
+services:
+  db:
+    image: postgres:16
+    container_name: ledgerlab-pg
+    environment:
+      POSTGRES_USER: ledgerlab
+      POSTGRES_PASSWORD: ledgerlab
+      POSTGRES_DB: ledgerlab
+    ports:
+      - "5432:5432"
+    volumes:
+      - ledgerlab-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ledgerlab -d ledgerlab"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ledgerlab-pgdata:

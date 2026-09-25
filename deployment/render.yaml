@@ -3,11 +3,11 @@
 #
 # This provisions:
 #   - PostgreSQL (managed)
-#   - ledger-api    (Docker, public)
+#   - ledger-api    (Docker, public; runs migrations as a pre-deploy step)
 #   - reporting-api (Docker, public; calls ledger-api over the private network)
 #   - web           (static SPA)
 #
-# After the first deploy, set the two `sync: false` values in the dashboard.
+# After the first deploy, set the `sync: false` values in the dashboard.
 
 databases:
   - name: ledgerlab-db
@@ -23,9 +23,13 @@ services:
     runtime: docker
     plan: starter
     region: singapore
+    numInstances: 2
     dockerfilePath: ./deployment/Dockerfile.ledger-api
     dockerContext: .
     healthCheckPath: /health
+    # Migrations run once per deploy, before the new version serves traffic.
+    # Never on container boot.
+    preDeployCommand: pnpm --filter @ledgerlab/db migrate:sql
     autoDeploy: true
     disk: []
     envVars:
@@ -35,10 +39,18 @@ services:
         fromDatabase:
           name: ledgerlab-db
           property: connectionString
+      - key: DB_POOL_MAX
+        value: 10
+      - key: DB_IDLE_TIMEOUT_SECONDS
+        value: 30
       - key: CORS_ORIGINS
         sync: false # set to your dashboard origin, e.g. https://ledgerlab.example.com
       - key: INTERNAL_API_TOKEN
         generateValue: true
+      - key: RATE_LIMIT_MAX
+        value: 120
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
 
   # ------------------------------------------------------------- reporting API
   - type: web
@@ -46,6 +58,7 @@ services:
     runtime: docker
     plan: starter
     region: singapore
+    numInstances: 2
     dockerfilePath: ./deployment/Dockerfile.reporting-api
     dockerContext: .
     healthCheckPath: /health
@@ -63,6 +76,10 @@ services:
           envVarKey: INTERNAL_API_TOKEN
       - key: CORS_ORIGINS
         sync: false
+      - key: RATE_LIMIT_MAX
+        value: 120
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
 
   # --------------------------------------------------------------- dashboard
   - type: web
@@ -76,13 +93,25 @@ services:
         destination: /index.html
     headers:
       - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains; preload
+      - path: /*
         name: X-Content-Type-Options
         value: nosniff
       - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      - path: /*
+        name: Content-Security-Policy
+        value: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'
     envVars:
       - key: VITE_LEDGER_API_URL
-        sync: false # e.g. https://ledgerlab-ledger-api.onrender.com
+        sync: false # e.g. https://api.ledgerlab.example.com
       - key: VITE_REPORTING_API_URL
-        sync: false # e.g. https://ledgerlab-reporting-api.onrender.com
+        sync: false # e.g. https://reports.ledgerlab.example.com
