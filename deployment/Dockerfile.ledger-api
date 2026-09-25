@@ -37,8 +37,9 @@ COPY --from=builder /app/packages/db/migrations ./packages/db/migrations
 
 # Run as a non-root user.
 USER node
-ENV LEDGER_API_PORT=4001 LEDGER_API_HOST=0.0.0.0
+# No port default here: the platform sets PORT and local dev sets LEDGER_API_PORT.
+ENV LEDGER_API_HOST=0.0.0.0
 EXPOSE 4001
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:'+(process.env.LEDGER_API_PORT||4001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.LEDGER_API_PORT||process.env.PORT||4001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node", "apps/ledger-api/dist/index.js"]

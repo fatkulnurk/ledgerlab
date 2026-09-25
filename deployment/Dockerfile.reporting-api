@@ -27,8 +27,9 @@ RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 COPY --from=builder /app/apps/reporting-api/dist ./apps/reporting-api/dist
 
 USER node
-ENV REPORTING_API_PORT=4002 REPORTING_API_HOST=0.0.0.0
+# No port default here: the platform sets PORT and local dev sets REPORTING_API_PORT.
+ENV REPORTING_API_HOST=0.0.0.0
 EXPOSE 4002
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:'+(process.env.REPORTING_API_PORT||4002)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.REPORTING_API_PORT||process.env.PORT||4002)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node", "apps/reporting-api/dist/index.js"]

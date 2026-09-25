@@ -17,8 +17,9 @@
 
 ## 1. Executive summary
 
-- **Compute:** three stateless pieces — a static SPA (`ledgerlab-web`), a
-  `ledger-api`, and a `reporting-api`, each a container image. Two replicas per
+- **Compute:** three stateless pieces — a static SPA (`koiledgerlab-web`), a
+  `koiledgerlab-ledger-api`, and a `koiledgerlab-reporting-api`, each a container
+  image. Two replicas per
   API service, no local disk, so any replica can serve any request.
 - **Data:** one managed PostgreSQL 16 database, private network only, encrypted
   at rest and in transit, with automated backups and a **restore drill actually
@@ -170,7 +171,7 @@ instance restore, budgeted at 30 minutes.
   custom rule blocking `/api/internal/*`; bot fight mode on any future `/login`.
 - **Private networking:** the database has no public endpoint; the reporting API
   reaches the ledger over Render's private network
-  (`http://ledgerlab-ledger-api:4001`). Only 443 is public.
+  (`http://koiledgerlab-ledger-api:4001`). Only 443 is public.
 - **Egress:** the APIs call only the database and each other; the reporting API's
   only outbound dependency is the ledger API. No third-party egress.
 

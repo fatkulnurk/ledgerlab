@@ -5,7 +5,9 @@ import { LedgerService } from "./services/ledger-service";
 import { resolveLedgerRepository } from "./repositories/resolve";
 import { rateLimitFromEnv } from "./middleware/rate-limit";
 
-const port = Number(process.env.LEDGER_API_PORT ?? 4001);
+// `PORT` is the platform convention (Render forwards traffic to it);
+// `LEDGER_API_PORT` stays supported for local development.
+const port = Number(process.env.LEDGER_API_PORT ?? process.env.PORT ?? 4001);
 const hostname = process.env.LEDGER_API_HOST ?? "0.0.0.0";
 const corsOrigins = parseCorsOrigins(process.env.CORS_ORIGINS);
 const internalToken = process.env.INTERNAL_API_TOKEN;
