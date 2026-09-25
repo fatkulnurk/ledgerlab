@@ -95,6 +95,10 @@ evidenced** (a command, a file, or a screenshot in your submission).
 - [ ] A **one-command** reproducible deploy is documented and was actually run.
 - [ ] See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
+> _Configured, not deployed._ Replicas, pre-deploy migrations and platform
+> secrets are committed in `deployment/render.yaml` and the images were run
+> locally against real PostgreSQL, but `render blueprint launch` has not been run.
+
 ### G5 — Security-aware hardening
 
 - [ ] No secrets in git; all from the platform secret store.
@@ -105,6 +109,10 @@ evidenced** (a command, a file, or a screenshot in your submission).
       API error bodies, rate limiting in front of `/api/*`.
 - [ ] See [`docs/SECURITY.md`](docs/SECURITY.md).
 
+> _Pending deploy._ The internal-token boundary, CORS guard, HSTS and rate
+> limiting are implemented and verified locally; the least-privilege DB user,
+> token/DB rotation, and edge blocking of `/api/internal/*` are not done yet.
+
 ### G6 — Cloudflare + custom TLD domain (scored bonus)
 
 - [ ] A **real TLD** you control (not `*.onrender.com` / `*.run.app`).
@@ -114,6 +122,9 @@ evidenced** (a command, a file, or a screenshot in your submission).
       from API traffic.
 - [ ] Evidence: `dig`, `curl -I`, and a WAF event screenshot.
 - [ ] See [`deployment/cloudflare/README.md`](deployment/cloudflare/README.md).
+
+> _Not attempted._ Requires a real TLD and a Cloudflare account; the configuration
+> to apply is documented in `deployment/cloudflare/README.md`.
 
 ### G7 — AI usage with a prompt log (required)
 

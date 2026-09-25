@@ -54,6 +54,9 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] Seeding is idempotent and scripted.
 - [ ] Connection pooling configured and documented.
 
+> _Verified locally against PostgreSQL; the managed-database hardening (private
+> endpoint, TLS, tested production restore) is pending deploy._
+
 ## P2 — Deploy, scale, secure
 
 - [ ] Deploy to Render / AWS / GCP / Azure (one is enough).
@@ -63,6 +66,9 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] HSTS + secure headers at the edge.
 - [ ] Rate limit on `/api/*`.
 - [ ] Migrations run as a job/step, not at container start.
+
+> _Configured in the blueprint and exercised locally; not yet run in a cloud
+> account. Migrations are a `preDeployCommand`, never on container boot._
 
 ## P2 — Infrastructure plan (G9)
 
@@ -74,6 +80,10 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] Cost the plan at 1× / 3× / 10× traffic and name what breaks first.
 - [ ] Write ≥3 ADRs with genuinely rejected options.
 - [ ] Verify the security controls table links to evidence, not intent.
+
+> _The topology and the controls that describe deployed reality (replicas running,
+> edge WAF, platform secrets) cannot be verified until deploy; those are marked
+> **Planned** in the plan._
 
 ## P2 — Next-phase development plan (G10)
 
@@ -94,6 +104,8 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] Cache rules: assets cached, API bypassed.
 - [ ] Evidence committed (`dig`, `curl -I`, WAF event screenshot).
 
+> _Not attempted._ Requires a real TLD and a Cloudflare account.
+
 ## P3 — Extra credit
 
 - [ ] Multi-currency: reports must not sum across currencies silently. Group by
@@ -102,6 +114,9 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] CSV or PDF export for the trial balance.
 - [ ] OpenAPI spec generated from the route schemas.
 - [ ] A load test (`k6`/`autocannon`) with results committed.
+
+> _Not attempted._ These are stretch goals; the correctness and security work was
+> prioritised instead (see `docs/SUBMISSION.md`).
 
 ---
 
