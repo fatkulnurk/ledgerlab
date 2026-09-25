@@ -85,8 +85,9 @@ DATABASE_URL=postgres://ledgerlab:ledgerlab@localhost:5432/ledgerlab \
   pnpm --filter @ledgerlab/ledger-api test
 ```
 
-> The contract test writes throwaway accounts and entries to the database in
-> `DATABASE_URL`. Point it at a disposable database, not production.
+> The contract test **truncates** `journal_lines`, `journal_entries` and
+> `accounts` before each Postgres case, so runs are deterministic and isolated.
+> Point `DATABASE_URL` at a **disposable** database, never production.
 
 Local Postgres without Docker:
 

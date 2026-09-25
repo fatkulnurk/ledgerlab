@@ -100,6 +100,84 @@ function repositoryContract(name: string, create: () => Promise<Harness>): void 
         await close();
       }
     });
+
+    it("voids a POSTED entry exactly once and rejects a second void", async () => {
+      const { repo, close } = await create();
+      try {
+        const { debit, credit } = await createTwoAccounts(repo);
+        const entry = await repo.createJournalEntry({
+          date: "2030-01-04",
+          memo: `contract void ${name}`,
+          lines: [
+            { accountId: debit.id, amountMinor: 700 },
+            { accountId: credit.id, amountMinor: -700 },
+          ],
+        });
+
+        const first = await repo.voidJournalEntry(entry.id);
+        expect(first?.status).toBe("VOID");
+
+        await expect(repo.voidJournalEntry(entry.id)).rejects.toBeTruthy();
+
+        // A voided entry disappears from the POSTED-only postings feed.
+        const postings = await repo.listPostings();
+        expect(postings.some((posting) => posting.entryId === entry.id)).toBe(false);
+      } finally {
+        await close();
+      }
+    });
+
+    it("filters journal entries by inclusive date range", async () => {
+      const { repo, close } = await create();
+      try {
+        const { debit, credit } = await createTwoAccounts(repo);
+        const lines = [
+          { accountId: debit.id, amountMinor: 100 },
+          { accountId: credit.id, amountMinor: -100 },
+        ];
+        await repo.createJournalEntry({ date: "2031-03-15", memo: `in-range ${name}`, lines });
+        await repo.createJournalEntry({ date: "2031-04-15", memo: `out-of-range ${name}`, lines });
+
+        const march = await repo.listJournalEntries({
+          page: 1,
+          pageSize: 50,
+          from: "2031-03-01",
+          to: "2031-03-31",
+        });
+        const memos = march.data.map((entry) => entry.memo);
+        expect(memos).toContain(`in-range ${name}`);
+        expect(memos).not.toContain(`out-of-range ${name}`);
+        expect(march.data.every((entry) => entry.date >= "2031-03-01" && entry.date <= "2031-03-31")).toBe(
+          true,
+        );
+      } finally {
+        await close();
+      }
+    });
+
+    it("orders same-date entries newest first (createdAt desc)", async () => {
+      const { repo, close } = await create();
+      try {
+        const { debit, credit } = await createTwoAccounts(repo);
+        const lines = [
+          { accountId: debit.id, amountMinor: 100 },
+          { accountId: credit.id, amountMinor: -100 },
+        ];
+        const first = await repo.createJournalEntry({ date: "2032-06-01", memo: `older ${name}`, lines });
+        // Give the two rows distinct createdAt values (ms precision in memory).
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        const second = await repo.createJournalEntry({ date: "2032-06-01", memo: `newer ${name}`, lines });
+
+        // Scope to this run's rows: Postgres persists rows across runs.
+        const page = await repo.listJournalEntries({ page: 1, pageSize: 200 });
+        const ids = page.data
+          .filter((entry) => entry.id === first.id || entry.id === second.id)
+          .map((entry) => entry.id);
+        expect(ids).toEqual([second.id, first.id]);
+      } finally {
+        await close();
+      }
+    });
   });
 }
 
@@ -111,6 +189,10 @@ repositoryContract("memory", async () => {
 describe.skipIf(!databaseUrl)("postgres adapter", () => {
   repositoryContract("postgres", async () => {
     const database = createDatabase(databaseUrl!, { max: 2 });
+    // Start every contract test from an empty ledger so leftover rows from a
+    // previous run cannot make an assertion pass or fail for the wrong reason.
+    // Point DATABASE_URL at a disposable database, never production.
+    await database.sql`TRUNCATE TABLE journal_lines, journal_entries, accounts CASCADE`;
     return { repo: new PostgresLedgerRepository(database.db), close: database.close };
   });
 });

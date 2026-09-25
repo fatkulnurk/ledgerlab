@@ -1,10 +1,59 @@
 import { describe, expect, it } from "vitest";
+import type { Account, JournalEntry, LedgerRepository } from "@ledgerlab/shared";
 import { InMemoryLedgerRepository } from "@ledgerlab/db";
 import { ConflictError, NotFoundError, UnbalancedEntryError, ValidationError } from "@ledgerlab/shared";
 import { LedgerService } from "../services/ledger-service";
 
 function buildService() {
   return new LedgerService(new InMemoryLedgerRepository({ seed: true }));
+}
+
+/**
+ * A permissive repository stub used to prove the SERVICE enforces its own
+ * rules, independent of the adapter-level guards (defence in depth).
+ */
+function permissiveRepo(overrides: Partial<LedgerRepository>): LedgerRepository {
+  const base: LedgerRepository = {
+    kind: "memory",
+    listAccounts: async () => [],
+    getAccountById: async () => undefined,
+    getAccountByCode: async () => undefined,
+    createAccount: async () => {
+      throw new Error("not implemented");
+    },
+    setAccountActive: async () => undefined,
+    listJournalEntries: async () => ({ data: [], page: 1, pageSize: 25, total: 0 }),
+    getJournalEntry: async () => undefined,
+    createJournalEntry: async () => {
+      throw new Error("not implemented");
+    },
+    voidJournalEntry: async () => undefined,
+    listPostings: async () => [],
+  };
+  return { ...base, ...overrides };
+}
+
+function inactiveAccount(): Account {
+  return {
+    id: "acct_inactive",
+    code: "9999",
+    name: "Inactive",
+    type: "ASSET",
+    currency: "USD",
+    isActive: false,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function voidedEntry(): JournalEntry {
+  return {
+    id: "je_void",
+    date: "2026-01-01",
+    memo: "already void",
+    status: "VOID",
+    createdAt: new Date().toISOString(),
+    lines: [],
+  };
 }
 
 describe("LedgerService business rules", () => {
@@ -124,5 +173,31 @@ describe("LedgerService business rules", () => {
     const target = entries.data[0]!;
     await service.voidJournalEntry(target.id);
     await expect(service.voidJournalEntry(target.id)).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it("enforces the void guard even when the repository does not", async () => {
+    // The adapter is permissive: it would happily "void" a VOID entry.
+    const repo = permissiveRepo({
+      getJournalEntry: async () => voidedEntry(),
+      voidJournalEntry: async () => voidedEntry(),
+    });
+    await expect(new LedgerService(repo).voidJournalEntry("je_void")).rejects.toBeInstanceOf(ConflictError);
+  });
+
+  it("enforces the inactive-account rule even when the repository does not", async () => {
+    const repo = permissiveRepo({
+      getAccountById: async () => inactiveAccount(),
+      createJournalEntry: async () => voidedEntry(),
+    });
+    await expect(
+      new LedgerService(repo).createJournalEntry({
+        date: "2026-02-01",
+        memo: "inactive account",
+        lines: [
+          { accountId: "acct_inactive", amountMinor: 100 },
+          { accountId: "acct_inactive", amountMinor: -100 },
+        ],
+      }),
+    ).rejects.toBeInstanceOf(ValidationError);
   });
 });
