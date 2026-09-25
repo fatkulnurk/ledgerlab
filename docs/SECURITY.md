@@ -16,41 +16,57 @@ command, or a screenshot.
 
 ## 2. Service-to-service boundary
 
-- [ ] `/api/internal/*` requires `Authorization: Bearer $INTERNAL_API_TOKEN`
+- [x] `/api/internal/*` requires `Authorization: Bearer $INTERNAL_API_TOKEN`
       (implemented in `apps/ledger-api/src/routes/internal.ts`).
-- [ ] The endpoint is **not** reachable from the public internet: - Render: keep it on the private network / block via a rule. - Cloudflare: a WAF rule blocks `POST /api/internal/*`. - AWS/GCP/Azure: restrict to the internal ALB / service network.
-- [ ] Evidence: `curl -X POST https://<api>/api/internal/postings` returns
-      `401`/`403`/`404` — never `200`.
+- [x] **Fail-closed**: in production a missing `INTERNAL_API_TOKEN` rejects every
+      request with `401` and the process refuses to boot without it.
+- [ ] The endpoint is **not** reachable from the public internet: Render keeps it
+      on the private network / blocks via a rule; Cloudflare adds a WAF rule that
+      blocks `POST /api/internal/*`; AWS/GCP/Azure restrict to the internal ALB /
+      service network.
+- [x] Evidence (local, in-memory): `GET /api/internal/postings` with no token →
+      `401`; wrong token → `401`; correct token → `200`. Production boot with no
+      token → `401` for every internal request.
 
 ## 3. CORS
 
-- [ ] `CORS_ORIGINS` is the exact dashboard origin (`https://ledgerlab.example.com`).
-- [ ] `*` is used **only** for local development.
-- [ ] Preflight is verified: `curl -H "Origin: https://evil.example" -I ...` does
+- [x] `CORS_ORIGINS` is the exact dashboard origin (`https://ledgerlab.example.com`).
+- [x] `*` is used **only** for local development. In production a `*` origin
+      makes the process **refuse to boot** (`assertProductionConfig`).
+- [x] Preflight is verified: `curl -H "Origin: https://evil.example" -I ...` does
       not echo the origin back in `Access-Control-Allow-Origin`.
 
 ## 4. Transport and headers
 
-- [ ] HTTPS only; HTTP redirects to HTTPS.
-- [ ] HSTS (`max-age` ≥ 31536000, `includeSubDomains`, `preload`).
-- [ ] `X-Content-Type-Options: nosniff`; `Referrer-Policy: strict-origin-when-cross-origin`; `X-Frame-Options: DENY` (or a CSP `frame-ancestors 'none'`).
-- [ ] A Content-Security-Policy for the dashboard (see `deployment/nginx.conf`).
+- [x] HSTS (`max-age` ≥ 31536000, `includeSubDomains`, `preload`) — set by the
+      API (`hono/secure-headers`) and `deployment/nginx.conf`.
+- [x] `X-Content-Type-Options: nosniff`; `Referrer-Policy: strict-origin-when-cross-origin`; `X-Frame-Options: DENY`.
+- [x] A Content-Security-Policy for the dashboard (see `deployment/nginx.conf`).
+- [ ] HTTPS only; HTTP redirects to HTTPS (enforced at Render + Cloudflare).
 - [ ] TLS 1.2+ only; prefer Full (strict) at Cloudflare.
 
 ## 5. Input and output
 
-- [ ] All request bodies validated with Zod at the boundary (routes use
+- [x] All request bodies validated with Zod at the boundary (routes use
       `parseBody`).
-- [ ] Money parsed by `parseAmountToMinor`; floats rejected.
-- [ ] API errors never leak stack traces, SQL, or secrets — `onError` maps
+- [x] Money parsed by `parseAmountToMinor`; floats rejected.
+- [x] API errors never leak stack traces, SQL, or secrets — `onError` maps
       `AppError` to a structured body and everything else to a generic 500.
-- [ ] Pagination is bounded (`pageSize` ≤ 200).
+- [x] Pagination is bounded (`pageSize` ≤ 200).
 
 ## 6. Rate limiting and abuse
 
-- [ ] A rate limit on `/api/*` (Cloudflare rule, Cloud Armor, WAF, or middleware).
-- [ ] Document the chosen limit and the action (block/challenge).
-- [ ] Evidence of a blocked burst.
+- [x] A rate limit on `/api/*` (fixed window, per client IP), implemented as
+      middleware in both APIs (`src/middleware/rate-limit.ts`).
+- [x] Documented limit: **120 requests / 60 s per client IP** by default.
+      Tunable via `RATE_LIMIT_MAX` and `RATE_LIMIT_WINDOW_MS`. Over the limit the
+      API returns `429` with a `Retry-After` header and
+      `X-RateLimit-Limit` / `X-RateLimit-Remaining` on every response.
+- [x] Evidence of a blocked burst: 130 rapid `GET /api/accounts` → first requests
+      `200`, then `429` (13 blocked) with `Retry-After: 17`.
+- [ ] `/health` is deliberately **not** rate limited so platform probes keep working.
+- [ ] Note: the limiter is per-process. With multiple replicas put a shared store
+      (Redis) or an edge limiter (Cloudflare WAF) in front.
 
 ## 7. Database
 
