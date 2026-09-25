@@ -55,36 +55,36 @@ evidenced** (a command, a file, or a screenshot in your submission).
 
 ### G0 — Fix the errors (highest priority)
 
-- [ ] Make `pnpm --filter @ledgerlab/ledger-api test:challenges` green by fixing
+- [x] Make `pnpm --filter @ledgerlab/ledger-api test:challenges` green by fixing
       the **source**, not the tests. The two defects are documented in
       [`apps/ledger-api/src/challenges/`](apps/ledger-api/src/challenges/).
-- [ ] `pnpm typecheck && pnpm test && pnpm build` all pass on a clean checkout.
-- [ ] No `TODO(candidate)` left unresolved in code paths you claim are finished.
+- [x] `pnpm typecheck && pnpm test && pnpm build` all pass on a clean checkout.
+- [x] No `TODO(candidate)` left unresolved in code paths you claim are finished.
 
 ### G1 — Finish the core ledger
 
-- [ ] Every mutation path preserves the invariant: **sum of signed minor units
+- [x] Every mutation path preserves the invariant: **sum of signed minor units
       === 0** for each entry.
-- [ ] Voiding is a guarded `POSTED → VOID` transition (no re-voiding).
-- [ ] Trial balance, income statement, and balance sheet are correct for any
+- [x] Voiding is a guarded `POSTED → VOID` transition (no re-voiding).
+- [x] Trial balance, income statement, and balance sheet are correct for any
       `asOf` / date range.
-- [ ] Tests cover each rule; each new test would fail if the rule broke.
+- [x] Tests cover each rule; each new test would fail if the rule broke.
 
 ### G2 — Un-slop the UI
 
 - [ ] Dashboard reads as a product, not a template: clear hierarchy, one accent
       colour, no decorative icon boxes, no emojis, no gradients/glassmorphism.
-- [ ] Money is right-aligned and uses tabular figures; empty and error states
+- [x] Money is right-aligned and uses tabular figures; empty and error states
       are designed, not default.
-- [ ] Follow [`docs/DESIGN.md`](docs/DESIGN.md) (the enforced design rules).
+- [x] Follow [`docs/DESIGN.md`](docs/DESIGN.md) (the enforced design rules).
 
 ### G3 — Real database (required)
 
-- [ ] The ledger runs against a **real database**, not the in-memory adapter.
+- [x] The ledger runs against a **real database**, not the in-memory adapter.
       PostgreSQL is wired up; **MySQL, MariaDB, SQLite/libSQL, or SQL Server are
       acceptable** if you implement the `LedgerRepository` port.
-- [ ] Schema is migrated (not auto-synced) and seeded via a repeatable script.
-- [ ] See [`docs/DATABASE.md`](docs/DATABASE.md).
+- [x] Schema is migrated (not auto-synced) and seeded via a repeatable script.
+- [x] See [`docs/DATABASE.md`](docs/DATABASE.md).
 
 ### G4 — Production-scale deployment
 
@@ -104,10 +104,10 @@ evidenced** (a command, a file, or a screenshot in your submission).
 - [ ] No secrets in git; all from the platform secret store.
 - [ ] `INTERNAL_API_TOKEN` set and `/api/internal/*` unreachable from the public
       internet.
-- [ ] `CORS_ORIGINS` restricted to the real dashboard origin (never `*` in prod).
+- [x] `CORS_ORIGINS` restricted to the real dashboard origin (never `*` in prod).
 - [ ] HTTPS/HSTS, secure headers, least-privilege DB user, no stack traces in
       API error bodies, rate limiting in front of `/api/*`.
-- [ ] See [`docs/SECURITY.md`](docs/SECURITY.md).
+- [x] See [`docs/SECURITY.md`](docs/SECURITY.md).
 
 > _Pending deploy._ The internal-token boundary, CORS guard, HSTS and rate
 > limiting are implemented and verified locally; the least-privilege DB user,
@@ -128,38 +128,38 @@ evidenced** (a command, a file, or a screenshot in your submission).
 
 ### G7 — AI usage with a prompt log (required)
 
-- [ ] Every AI prompt that influenced the code is recorded via `pnpm ai:log`.
-- [ ] `pnpm ai:verify` passes in CI.
-- [ ] Each entry has: tool, model, task, prompt, summary, decision, files.
-- [ ] **Show your rejected AI suggestions too** — judgment is what is scored.
-- [ ] See [`docs/AI-USAGE.md`](docs/AI-USAGE.md).
+- [x] Every AI prompt that influenced the code is recorded via `pnpm ai:log`.
+- [x] `pnpm ai:verify` passes in CI.
+- [x] Each entry has: tool, model, task, prompt, summary, decision, files.
+- [x] **Show your rejected AI suggestions too** — judgment is what is scored.
+- [x] See [`docs/AI-USAGE.md`](docs/AI-USAGE.md).
 
 ### G8 — Build your own sub-agents (required)
 
-- [ ] At least **three** working sub-agents under [`.opencode/agent/`](.opencode/agent/).
-- [ ] Starter agents are provided (`ledger-architect`, `ui-unslop`,
+- [x] At least **three** working sub-agents under [`.opencode/agent/`](.opencode/agent/).
+- [x] Starter agents are provided (`ledger-architect`, `ui-unslop`,
       `test-runner`, `deploy-security`) — you must **extend or replace** them
       with agents that fit your workflow, and demonstrate them working.
-- [ ] See [`docs/SUBAGENTS.md`](docs/SUBAGENTS.md).
+- [x] See [`docs/SUBAGENTS.md`](docs/SUBAGENTS.md).
 
 ### G9 — Infrastructure plan (required)
 
-- [ ] Produce `docs/INFRASTRUCTURE-PLAN.md` from the template: target topology,
+- [x] Produce `docs/INFRASTRUCTURE-PLAN.md` from the template: target topology,
       environments, compute and scaling, data durability with **RPO/RTO and an
       actually-performed restore drill**, networking/edge, secrets and identity,
       CI/CD and rollback, observability with SLOs, a cost model with arithmetic,
       failure modes, and at least three ADRs with rejected options.
 - [ ] Every section is specific and matches what is really deployed.
-- [ ] See [`docs/INFRASTRUCTURE-PLAN.md`](docs/INFRASTRUCTURE-PLAN.md).
+- [x] See [`docs/INFRASTRUCTURE-PLAN.md`](docs/INFRASTRUCTURE-PLAN.md).
 
 ### G10 — Next-phase development plan (required)
 
-- [ ] Produce `docs/NEXT-PHASE-PLAN.md`: measurable outcomes tied to
+- [x] Produce `docs/NEXT-PHASE-PLAN.md`: measurable outcomes tied to
       stakeholders, a stated prioritisation method, three milestones with
       testable exit criteria and dates, delivery capacity and the next hires,
       technical workstreams, risks, metrics with sources, and what you are
       explicitly deferring.
-- [ ] See [`docs/NEXT-PHASE-PLAN.md`](docs/NEXT-PHASE-PLAN.md).
+- [x] See [`docs/NEXT-PHASE-PLAN.md`](docs/NEXT-PHASE-PLAN.md).
 
 ---
 

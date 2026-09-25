@@ -213,9 +213,9 @@ preload`, `x-content-type-options: nosniff`, `x-frame-options: DENY`,
 ```
 pnpm format:check   # PASS
 pnpm typecheck      # PASS
-pnpm test           # PASS (75 passed; Postgres contract tests skip without DATABASE_URL)
+pnpm test           # PASS (82 passed, 6 skipped without DATABASE_URL)
 pnpm build          # PASS
-pnpm ai:verify      # PASS (23 entries)
+pnpm ai:verify      # PASS (24 entries)
 pnpm --filter @ledgerlab/ledger-api test:challenges   # PASS (4/4)
 ```
 
@@ -224,14 +224,24 @@ filter directly):
 
 ```
 DATABASE_URL=postgres://… pnpm --filter @ledgerlab/ledger-api test
-# PASS (41 passed, including the Postgres repository contract)
+# PASS (51 passed, including the Postgres repository contract)
 ```
+
+**Rules are proven by mutation testing** (`docs/MUTATION-TESTING.md`): 25 rules
+were broken in source and 24 were detected by a failing test with a database
+(21 in CI). The single survivor is an equivalent mutant (a redundant
+defence-in-depth guard whose callers already pre-filter); the three
+Postgres-adapter rules that CI cannot reach are recorded as a known gap.
 
 ## What I skipped and why
 
 - **Live Render deployment and Cloudflare/TLD (G4/G6):** the config and images
   are complete and verified locally, but launching them needs the account owner.
   Underscoping, not hiding.
+- **UI polish beyond the design rules:** the enforced rules are met, but a
+  hierarchy pass (bundled Inter font, per-section report subtotals, arrow-key
+  navigation on the ledger list, skeleton loading) was deliberately deferred so
+  the correctness and security work stayed solid.
 - **Observability beyond platform logs and health checks:** acceptable at 1×;
   alerts and tracing are costed in the infrastructure plan for 3×.
 - **Auth and multi-tenancy:** out of scope for the test; specified in the
