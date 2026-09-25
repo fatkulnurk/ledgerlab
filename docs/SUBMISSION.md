@@ -81,7 +81,7 @@ domain I control. The Cloudflare configuration to apply is documented in
 
 **G7/G8 — Process**
 
-- 23 AI interactions logged, including a rejected suggestion.
+- 25 AI interactions logged, including a rejected suggestion.
 - Two custom sub-agents added (`db-migrator`, `challenge-fixer`) and used;
   `ledger-architect` caught 9 real defects in an audit.
 
@@ -182,7 +182,7 @@ preload`, `x-content-type-options: nosniff`, `x-frame-options: DENY`,
 
 ## AI usage
 
-- Entries in `docs/ai/prompt-log.jsonl`: **23**.
+- Entries in `docs/ai/prompt-log.jsonl`: **25**.
 - A prompt I **rejected** and why: I rejected adding a Postgres trigger/CHECK
   constraint to enforce the balancing invariant at the database level — the rule
   is already enforced in the service and both adapters, a per-entry deferred
@@ -215,7 +215,7 @@ pnpm format:check   # PASS
 pnpm typecheck      # PASS
 pnpm test           # PASS (82 passed, 6 skipped without DATABASE_URL)
 pnpm build          # PASS
-pnpm ai:verify      # PASS (24 entries)
+pnpm ai:verify      # PASS (25 entries)
 pnpm --filter @ledgerlab/ledger-api test:challenges   # PASS (4/4)
 ```
 
