@@ -1,3 +1,4 @@
+import { loadRootEnv } from "@ledgerlab/shared/node";
 import { createDatabase } from "./client";
 import { PostgresLedgerRepository } from "./postgres-repository";
 import { runSeed } from "./seed";
@@ -7,6 +8,9 @@ import { runSeed } from "./seed";
  * Idempotent: running it repeatedly never duplicates data.
  */
 async function main(): Promise<void> {
+  // Local development reads the repository-root `.env`; production injects
+  // `DATABASE_URL` directly, so the missing file is a harmless no-op.
+  loadRootEnv();
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is required to seed Postgres");
   const { db, close } = createDatabase(url, { max: 1 });
