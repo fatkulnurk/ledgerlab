@@ -6,16 +6,48 @@
 // dev dependencies like tsx are not installed.
 //
 //   DATABASE_URL=... node migrate.mjs
+import { readFileSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 
+const here = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Load the repository-root `.env` without overwriting real environment values.
+ * Kept inline because this file runs in the production image, where no
+ * TypeScript toolchain (and no `.env`) is available. A missing file is a no-op.
+ */
+function loadRootEnv() {
+  const envPath = join(here, "..", "..", ".env");
+  let contents;
+  try {
+    contents = readFileSync(envPath, "utf8");
+  } catch {
+    return;
+  }
+  for (const rawLine of contents.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (line === "" || line.startsWith("#")) continue;
+    const separator = line.indexOf("=");
+    if (separator === -1) continue;
+    const key = line.slice(0, separator).trim();
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) continue;
+    let value = line.slice(separator + 1).trim();
+    const quoted =
+      value.length >= 2 &&
+      ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'")));
+    if (quoted) value = value.slice(1, -1);
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+}
+
 async function main() {
+  loadRootEnv();
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is required to run migrations");
 
-  const here = dirname(fileURLToPath(import.meta.url));
   const migrationsDir = join(here, "migrations");
   const sql = postgres(url, { max: 1 });
 

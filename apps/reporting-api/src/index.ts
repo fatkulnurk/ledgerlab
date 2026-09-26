@@ -1,9 +1,14 @@
 import { serve } from "@hono/node-server";
 import { assertProductionConfig, parseCorsOrigins } from "@ledgerlab/shared";
+import { loadRootEnv } from "@ledgerlab/shared/node";
 import { createReportingApp } from "./app";
 import { LedgerClient } from "./ledger-client";
 import { ReportingService } from "./services/reporting-service";
 import { rateLimitFromEnv } from "./middleware/rate-limit";
+
+// Local development reads the repository-root `.env`. No-op in production, where
+// the platform injects the same variables (and a `.env` is never shipped).
+loadRootEnv();
 
 // `PORT` is the platform convention (Render forwards traffic to it);
 // `REPORTING_API_PORT` stays supported for local development.
