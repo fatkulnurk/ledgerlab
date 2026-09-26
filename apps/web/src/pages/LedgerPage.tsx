@@ -115,21 +115,19 @@ export function LedgerPage() {
           onRetry={reload}
           isEmpty={(result) => result.data.length === 0}
           empty={
-            <div className="p-4">
-              <EmptyState
-                title={hasFilters ? "No entries match these filters" : "No journal entries yet"}
-                description={
-                  hasFilters
-                    ? "Try widening the date range or clearing the status filter."
-                    : "Entries you post will appear here."
-                }
-              />
-            </div>
+            <EmptyState
+              title={hasFilters ? "No entries match these filters" : "No journal entries yet"}
+              description={
+                hasFilters
+                  ? "Try widening the date range or clearing the status filter."
+                  : "Entries you post will appear here."
+              }
+            />
           }
         >
           {(result) => (
             <>
-              <TableWrap>
+              <TableWrap label="Journal entries">
                 <THead>
                   <TR>
                     <TH className="w-28">Date</TH>

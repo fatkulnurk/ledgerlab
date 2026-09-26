@@ -23,13 +23,31 @@ function navLinkClass(isActive: boolean): string {
   );
 }
 
+function NavLinks({ className, linkClassName }: { className?: string; linkClassName?: string }) {
+  return (
+    <nav aria-label="Primary" className={className}>
+      {NAV.map(({ to, label, icon: Icon, end }) => (
+        <NavLink
+          key={to}
+          to={to}
+          end={end}
+          className={({ isActive }) => cn(navLinkClass(isActive), linkClassName)}
+        >
+          <Icon className="size-4 text-zinc-400" aria-hidden />
+          {label}
+        </NavLink>
+      ))}
+    </nav>
+  );
+}
+
 function ServiceStatus() {
   const { data, error, loading } = useAsync(() => api.ledger.health(), []);
   const ok = Boolean(data) && !error;
   const dot = loading ? "bg-zinc-300" : ok ? "bg-emerald-500" : "bg-red-500";
   const label = loading ? "checking…" : ok ? `ledger · ${data?.repository}` : "ledger offline";
   return (
-    <div className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-500">
+    <div role="status" aria-live="polite" className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-500">
       <span className={cn("size-2 rounded-full", dot)} aria-hidden />
       <span>{label}</span>
     </div>
@@ -43,14 +61,7 @@ export function AppShell() {
         <div className="flex h-14 items-center border-b border-zinc-200 px-4">
           <span className="text-sm font-semibold tracking-tight text-zinc-900">LedgerLab</span>
         </div>
-        <nav className="flex flex-1 flex-col gap-0.5 p-2">
-          {NAV.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end} className={({ isActive }) => navLinkClass(isActive)}>
-              <Icon className="size-4 text-zinc-400" aria-hidden />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
+        <NavLinks className="flex flex-1 flex-col gap-0.5 p-2" />
         <div className="border-t border-zinc-200">
           <ServiceStatus />
         </div>
@@ -61,19 +72,7 @@ export function AppShell() {
           <div className="flex h-14 items-center px-4">
             <span className="text-sm font-semibold text-zinc-900">LedgerLab</span>
           </div>
-          <nav className="flex gap-1 overflow-x-auto px-2 pb-2">
-            {NAV.map(({ to, label, icon: Icon, end }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={end}
-                className={({ isActive }) => cn(navLinkClass(isActive), "shrink-0 py-1.5")}
-              >
-                <Icon className="size-4 text-zinc-400" aria-hidden />
-                {label}
-              </NavLink>
-            ))}
-          </nav>
+          <NavLinks className="flex gap-1 overflow-x-auto px-2 pb-2" linkClassName="shrink-0 py-1.5" />
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8 md:py-8">
           <Outlet />

@@ -50,7 +50,10 @@ export function ReportsPage() {
         description={`As of ${formatDate(asOf)}`}
         actions={
           balanceSheet.data ? (
-            <Badge tone={balanceSheet.data.outOfBalanceMinor === 0 ? "positive" : "negative"}>
+            <Badge
+              className="tabular-nums"
+              tone={balanceSheet.data.outOfBalanceMinor === 0 ? "positive" : "negative"}
+            >
               {balanceSheet.data.outOfBalanceMinor === 0
                 ? "Balanced"
                 : `Off by ${money(balanceSheet.data.outOfBalanceMinor)}`}
@@ -64,9 +67,18 @@ export function ReportsPage() {
           error={balanceSheet.error}
           data={balanceSheet.data}
           onRetry={balanceSheet.reload}
+          isEmpty={(data) =>
+            data.totalAssetsMinor === 0 && data.totalLiabilitiesMinor === 0 && data.totalEquityMinor === 0
+          }
+          empty={
+            <EmptyState
+              title="No balances to report"
+              description="There are no posted entries on or before this date."
+            />
+          }
         >
           {(data) => (
-            <TableWrap>
+            <TableWrap label="Balance sheet">
               <THead>
                 <TR>
                   <TH className="w-24">Code</TH>
@@ -100,16 +112,14 @@ export function ReportsPage() {
           onRetry={income.reload}
           isEmpty={(data) => data.revenue.length + data.expenses.length === 0}
           empty={
-            <div className="p-4">
-              <EmptyState
-                title="No revenue or expenses in this period"
-                description="Adjust the date range or post an entry to see an income statement."
-              />
-            </div>
+            <EmptyState
+              title="No revenue or expenses in this period"
+              description="Adjust the date range or post an entry to see an income statement."
+            />
           }
         >
           {(data) => (
-            <TableWrap>
+            <TableWrap label="Income statement">
               <THead>
                 <TR>
                   <TH>Line</TH>
@@ -155,16 +165,14 @@ export function ReportsPage() {
           onRetry={trial.reload}
           isEmpty={(data) => data.rows.length === 0}
           empty={
-            <div className="p-4">
-              <EmptyState
-                title="No activity yet"
-                description="There are no posted entries on or before this date."
-              />
-            </div>
+            <EmptyState
+              title="No activity yet"
+              description="There are no posted entries on or before this date."
+            />
           }
         >
           {(data) => (
-            <TableWrap>
+            <TableWrap label="Trial balance">
               <THead>
                 <TR>
                   <TH className="w-24">Code</TH>

@@ -72,7 +72,7 @@ evidenced** (a command, a file, or a screenshot in your submission).
 
 ### G2 — Un-slop the UI
 
-- [ ] Dashboard reads as a product, not a template: clear hierarchy, one accent
+- [x] Dashboard reads as a product, not a template: clear hierarchy, one accent
       colour, no decorative icon boxes, no emojis, no gradients/glassmorphism.
 - [x] Money is right-aligned and uses tabular figures; empty and error states
       are designed, not default.

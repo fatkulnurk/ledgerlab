@@ -45,13 +45,32 @@ domain I control. The Cloudflare configuration to apply is documented in
 
 **G2 — Un-slop UI**
 
-- `Async` gained an empty state; every list has a designed empty state.
-- Money is right-aligned and tabular everywhere (stat cards, dashboard, inputs).
-- Account-type badge switched from accent to neutral; accent is reserved for
-  primary actions.
-- Inline money validation with the real `parseAmountToMinor` error message.
-- Ledger list: status + date-range filters, `aria-expanded`/`aria-controls`.
-- Mobile navigation added; `JSON.parse` guarded; focus-visible styles.
+Full audit with evidence: [`docs/UI-AUDIT.md`](UI-AUDIT.md). All eight
+`DESIGN.md` checklist items pass.
+
+- `EmptyState` no longer draws a bordered box, so empty states are no longer a
+  card-in-card; the one caller outside a card now wraps it in a `Card`.
+- Money inside badges is tabular; money in tables and stats was already
+  right-aligned with `tabular-nums`.
+- Balance sheet gained a designed empty state (keyed on the report totals, since
+  the synthetic earnings row means the row list is never empty).
+- Dropped `"Inter"` from the font stack (it was declared but never loaded) in
+  favour of the system UI stack — no external font request.
+- Removed the dead `Badge` `accent` tone that would have broken the one-accent
+  rule if used.
+- Extracted one `NavLinks` component (the nav was rendered twice with divergent
+  wrappers).
+- Fixed a real mobile bug: `/ledger/new` overflowed horizontally because the
+  lines table had no scroll container; it now uses `TableWrap` with a responsive
+  amount column.
+- Removed the `favicon.ico` 404 console error with an inline SVG favicon.
+- Accessibility: `role="status"` on loading and service status, `aria-label` on
+  both navs, `scope="col"` on the inner entry table, `aria-describedby` for the
+  amount error, and wide tables are now focusable labeled scroll regions.
+- Ledger list and entry form are operable without a mouse (native controls in DOM
+  order).
+- Verified with a real browser at 1280 px and 390 px: no console errors, no
+  horizontal overflow on any route. Screenshots in `docs/evidence/g2/`.
 
 **G3 — Real database**
 
@@ -81,7 +100,7 @@ domain I control. The Cloudflare configuration to apply is documented in
 
 **G7/G8 — Process**
 
-- 25 AI interactions logged, including a rejected suggestion.
+- 34 AI interactions logged, including a rejected suggestion.
 - Two custom sub-agents added (`db-migrator`, `challenge-fixer`) and used;
   `ledger-architect` caught 9 real defects in an audit.
 
@@ -182,7 +201,7 @@ preload`, `x-content-type-options: nosniff`, `x-frame-options: DENY`,
 
 ## AI usage
 
-- Entries in `docs/ai/prompt-log.jsonl`: **25**.
+- Entries in `docs/ai/prompt-log.jsonl`: **34**.
 - A prompt I **rejected** and why: I rejected adding a Postgres trigger/CHECK
   constraint to enforce the balancing invariant at the database level — the rule
   is already enforced in the service and both adapters, a per-entry deferred
@@ -215,7 +234,7 @@ pnpm format:check   # PASS
 pnpm typecheck      # PASS
 pnpm test           # PASS (82 passed, 6 skipped without DATABASE_URL)
 pnpm build          # PASS
-pnpm ai:verify      # PASS (25 entries)
+pnpm ai:verify      # PASS (34 entries)
 pnpm --filter @ledgerlab/ledger-api test:challenges   # PASS (4/4)
 ```
 
@@ -238,10 +257,10 @@ Postgres-adapter rules that CI cannot reach are recorded as a known gap.
 - **Live Render deployment and Cloudflare/TLD (G4/G6):** the config and images
   are complete and verified locally, but launching them needs the account owner.
   Underscoping, not hiding.
-- **UI polish beyond the design rules:** the enforced rules are met, but a
-  hierarchy pass (bundled Inter font, per-section report subtotals, arrow-key
-  navigation on the ledger list, skeleton loading) was deliberately deferred so
-  the correctness and security work stayed solid.
+- **UI polish beyond the design rules:** all eight `DESIGN.md` checklist items
+  pass (see `docs/UI-AUDIT.md`), but per-section report subtotals, arrow-key
+  navigation on the ledger list, and skeleton loading were deliberately deferred
+  so the correctness and security work stayed solid.
 - **Observability beyond platform logs and health checks:** acceptable at 1×;
   alerts and tracing are costed in the infrastructure plan for 3×.
 - **Auth and multi-tenancy:** out of scope for the test; specified in the

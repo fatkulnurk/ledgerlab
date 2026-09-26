@@ -3,7 +3,7 @@ import { Button, EmptyState } from "@ledgerlab/ui";
 
 export function LoadingBlock({ label = "Loading…" }: { label?: string }) {
   return (
-    <div className="flex items-center gap-2 py-8 text-sm text-zinc-500">
+    <div role="status" aria-live="polite" className="flex items-center gap-2 py-8 text-sm text-zinc-500">
       <span
         aria-hidden
         className="size-3.5 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600"

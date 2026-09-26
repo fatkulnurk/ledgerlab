@@ -119,21 +119,19 @@ export function DashboardPage() {
           onRetry={recent.reload}
           isEmpty={(page) => page.data.length === 0}
           empty={
-            <div className="p-4">
-              <EmptyState
-                title="No journal entries yet"
-                description="Posted entries will appear here once you record your first transaction."
-                action={
-                  <Link to="/ledger/new">
-                    <Button variant="primary">New journal entry</Button>
-                  </Link>
-                }
-              />
-            </div>
+            <EmptyState
+              title="No journal entries yet"
+              description="Posted entries will appear here once you record your first transaction."
+              action={
+                <Link to="/ledger/new">
+                  <Button variant="primary">New journal entry</Button>
+                </Link>
+              }
+            />
           }
         >
           {(page) => (
-            <TableWrap>
+            <TableWrap label="Recent journal entries">
               <THead>
                 <TR>
                   <TH>Date</TH>

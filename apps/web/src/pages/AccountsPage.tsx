@@ -99,16 +99,14 @@ export function AccountsPage() {
           onRetry={reload}
           isEmpty={(accounts) => accounts.length === 0}
           empty={
-            <div className="p-4">
-              <EmptyState
-                title="No accounts yet"
-                description="Add your first account above to start recording journal entries."
-              />
-            </div>
+            <EmptyState
+              title="No accounts yet"
+              description="Add your first account above to start recording journal entries."
+            />
           }
         >
           {(accounts) => (
-            <TableWrap>
+            <TableWrap label="Chart of accounts">
               <THead>
                 <TR>
                   <TH className="w-24">Code</TH>
