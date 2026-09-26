@@ -240,6 +240,7 @@ docs/                        Scenario, tasks, design, database, deployment, secu
                              sub-agents, infrastructure plan, next-phase plan, submission
 scripts/                     log-ai-prompt.mjs, verify-ai-log.mjs
 .opencode/agent/             Your sub-agents live here
+.opencode/commands/          Slash-commands that dispatch to those sub-agents
 ```
 
 ---
@@ -352,7 +353,9 @@ You must build sub-agents and use them for the work. Starter agents exist under
 | `db-migrator` _(suggested)_        | Schema, migrations, seeding, and the repository port |
 | `reporting-verifier` _(suggested)_ | Proves reports tie out to the ledger                 |
 
-Spec and definition of done: [`docs/SUBAGENTS.md`](docs/SUBAGENTS.md).
+Spec and definition of done: [`docs/SUBAGENTS.md`](docs/SUBAGENTS.md). Two
+slash-commands (`.opencode/commands/`) dispatch to them: `/verify` (full CI
+gate) and `/challenges` (restore the challenge suite).
 
 ---
 

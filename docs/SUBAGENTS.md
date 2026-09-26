@@ -82,6 +82,46 @@ tools:
 The system prompt: scope, method, constraints, output contract.
 ```
 
+## Commands
+
+Two slash-commands dispatch to the agents above, so the routine gates are one
+word instead of a re-typed prompt. They live in `.opencode/commands/` and become
+available in the TUI after opencode restarts.
+
+| Command       | Agent             | Job                                                               |
+| ------------- | ----------------- | ----------------------------------------------------------------- |
+| `/verify`     | `test-runner`     | Runs the full CI gate in CI order and reports failures with proof |
+| `/challenges` | `challenge-fixer` | Restores the challenge suite from production source only          |
+
+```markdown
+---
+description: Run the full CI gate (ai:verify, typecheck, test, challenge suite, build, format) and report failures with pasted evidence.
+agent: test-runner
+subtask: true
+---
+
+Run the repository's verification gate in the same order as CI, then report with pasted evidence.
+
+1. `pnpm ai:verify`
+2. `pnpm typecheck`
+3. `pnpm test`
+4. `pnpm --filter @ledgerlab/ledger-api test:challenges`
+5. `pnpm build`
+6. `pnpm format:check`
+
+Use your standard reporting format. Do not edit any code.
+
+$ARGUMENTS
+```
+
+- `agent:` pins the executor, so the prompt is not re-interpreted per run.
+- `subtask: true` keeps the long output out of the primary context.
+- `$ARGUMENTS` appends whatever is typed after the command, e.g.
+  `/verify focus on ledger-api`. Drop the placeholder if you do not want it.
+- Command frontmatter is strict: only `description`, `agent`, `model`,
+  `variant`, and `subtask` are accepted, and the body itself is the template —
+  do **not** add a `template:` key.
+
 ## Definition of done for each agent
 
 1. **Scoped** — one concern, stated in the first line of the prompt.
