@@ -1,5 +1,18 @@
 import { Link } from "react-router-dom";
-import { Badge, Card, PageHeader, Stat, TBody, TD, TH, THead, TR, TableWrap, Button } from "@ledgerlab/ui";
+import {
+  Badge,
+  Card,
+  EmptyState,
+  PageHeader,
+  Stat,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  TableWrap,
+  Button,
+} from "@ledgerlab/ui";
 import { Async } from "../components/states";
 import { api } from "../lib/api";
 import { useAsync } from "../lib/useAsync";
@@ -65,15 +78,19 @@ export function DashboardPage() {
               <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-3">
                 <div>
                   <dt className="text-zinc-500">Accounts in use</dt>
-                  <dd className="mt-0.5 font-medium tabular-nums text-zinc-900">{data.accountCount}</dd>
+                  <dd className="mt-0.5 text-right font-medium tabular-nums text-zinc-900">
+                    {data.accountCount}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-zinc-500">Posted entries</dt>
-                  <dd className="mt-0.5 font-medium tabular-nums text-zinc-900">{data.entryCount}</dd>
+                  <dd className="mt-0.5 text-right font-medium tabular-nums text-zinc-900">
+                    {data.entryCount}
+                  </dd>
                 </div>
                 <div>
                   <dt className="text-zinc-500">Expenses (MTD)</dt>
-                  <dd className="mt-0.5 font-medium tabular-nums text-zinc-900">
+                  <dd className="mt-0.5 text-right font-medium tabular-nums text-zinc-900">
                     {money(data.expensesMonthToDateMinor)}
                   </dd>
                 </div>
@@ -87,14 +104,34 @@ export function DashboardPage() {
         title="Recent journal entries"
         padded={false}
         actions={
-          <Link to="/ledger" className="text-sm text-indigo-600 hover:text-indigo-700">
+          <Link
+            to="/ledger"
+            className="rounded-sm text-sm text-indigo-600 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
             View all
           </Link>
         }
       >
-        <Async loading={recent.loading} error={recent.error} data={recent.data} onRetry={recent.reload}>
+        <Async
+          loading={recent.loading}
+          error={recent.error}
+          data={recent.data}
+          onRetry={recent.reload}
+          isEmpty={(page) => page.data.length === 0}
+          empty={
+            <EmptyState
+              title="No journal entries yet"
+              description="Posted entries will appear here once you record your first transaction."
+              action={
+                <Link to="/ledger/new">
+                  <Button variant="primary">New journal entry</Button>
+                </Link>
+              }
+            />
+          }
+        >
           {(page) => (
-            <TableWrap>
+            <TableWrap label="Recent journal entries">
               <THead>
                 <TR>
                   <TH>Date</TH>

@@ -13,7 +13,7 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 
 ## P0 — Fix the errors
 
-- [ ] `pnpm --filter @ledgerlab/ledger-api test:challenges` is red. Make it green
+- [x] `pnpm --filter @ledgerlab/ledger-api test:challenges` is red. Make it green
       **by fixing production code**, never the specs.
   - **Challenge A** (`src/challenges/asof.challenge.ts`) — `buildTrialBalance`
     ignores `asOf`, so periods bleed into each other. Fix the date filtering in
@@ -22,37 +22,40 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
     unguarded state change. Make `POSTED → VOID` the only legal transition and
     return `409 CONFLICT` otherwise. Touch `LedgerService` and both repository
     adapters.
-- [ ] `pnpm typecheck && pnpm test && pnpm build` all pass from a clean clone.
+- [x] `pnpm typecheck && pnpm test && pnpm build` all pass from a clean clone.
 
 ## P1 — Core ledger correctness
 
-- [ ] Add a test that proves the balancing invariant for the Postgres adapter
+- [x] Add a test that proves the balancing invariant for the Postgres adapter
       too (or for the port in general), not just the in-memory one.
-- [ ] Reject journal lines that reference an **inactive** account.
-- [ ] Reject entries dated in a closed accounting period (add a `periods` table
+- [x] Reject journal lines that reference an **inactive** account.
+- [x] Reject entries dated in a closed accounting period (add a `periods` table
       or a simple `closedThrough` setting; document the rule you chose).
-- [ ] Income statement and balance sheet must exclude `VOID` entries — add a
+- [x] Income statement and balance sheet must exclude `VOID` entries — add a
       regression test.
-- [ ] `pnpm --filter @ledgerlab/ledger-api test:challenges` green in CI.
+- [x] `pnpm --filter @ledgerlab/ledger-api test:challenges` green in CI.
 
 ## P2 — Product quality
 
-- [ ] Un-slop the dashboard per [`DESIGN.md`](DESIGN.md): remove decorative
+- [x] Un-slop the dashboard per [`DESIGN.md`](DESIGN.md): remove decorative
       icons, gradients, excess nested cards; fix hierarchy and spacing.
-- [ ] Empty, loading, and error states on every page.
-- [ ] Keyboard access: the ledger list is navigable, the entry form is usable
+- [x] Empty, loading, and error states on every page.
+- [x] Keyboard access: the ledger list is navigable, the entry form is usable
       without a mouse.
-- [ ] Money input rejects bad values with an inline message (uses
+- [x] Money input rejects bad values with an inline message (uses
       `parseAmountToMinor` errors).
-- [ ] Pagination and filtering on the ledger list (status, date range).
+- [x] Pagination and filtering on the ledger list (status, date range).
 
 ## P2 — Database
 
-- [ ] Run against a real database (`docs/DATABASE.md`). PostgreSQL is wired;
+- [x] Run against a real database (`docs/DATABASE.md`). PostgreSQL is wired;
       MySQL/SQLite are accepted if you implement the port.
 - [ ] Migrations applied as a deploy step, not on boot.
-- [ ] Seeding is idempotent and scripted.
-- [ ] Connection pooling configured and documented.
+- [x] Seeding is idempotent and scripted.
+- [x] Connection pooling configured and documented.
+
+> _Verified locally against PostgreSQL; the managed-database hardening (private
+> endpoint, TLS, tested production restore) is pending deploy._
 
 ## P2 — Deploy, scale, secure
 
@@ -61,29 +64,36 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] Secrets in the platform store; **no** secret in the repo.
 - [ ] `CORS_ORIGINS` restricted; `INTERNAL_API_TOKEN` set.
 - [ ] HSTS + secure headers at the edge.
-- [ ] Rate limit on `/api/*`.
+- [x] Rate limit on `/api/*`.
 - [ ] Migrations run as a job/step, not at container start.
+
+> _Configured in the blueprint and exercised locally; not yet run in a cloud
+> account. Migrations are a `preDeployCommand`, never on container boot._
 
 ## P2 — Infrastructure plan (G9)
 
-- [ ] Copy [`INFRASTRUCTURE-PLAN.md`](INFRASTRUCTURE-PLAN.md) to
+- [x] Copy [`INFRASTRUCTURE-PLAN.md`](INFRASTRUCTURE-PLAN.md) to
       `docs/INFRASTRUCTURE-PLAN.md` and fill every section.
 - [ ] Draw the target topology and make sure it matches what is actually deployed.
-- [ ] State RPO/RTO and **perform a restore drill**; record the duration and result.
-- [ ] Show the capacity arithmetic (requests/sec per replica, DB connections, storage growth).
-- [ ] Cost the plan at 1× / 3× / 10× traffic and name what breaks first.
-- [ ] Write ≥3 ADRs with genuinely rejected options.
-- [ ] Verify the security controls table links to evidence, not intent.
+- [x] State RPO/RTO and **perform a restore drill**; record the duration and result.
+- [x] Show the capacity arithmetic (requests/sec per replica, DB connections, storage growth).
+- [x] Cost the plan at 1× / 3× / 10× traffic and name what breaks first.
+- [x] Write ≥3 ADRs with genuinely rejected options.
+- [x] Verify the security controls table links to evidence, not intent.
+
+> _The topology and the controls that describe deployed reality (replicas running,
+> edge WAF, platform secrets) cannot be verified until deploy; those are marked
+> **Planned** in the plan._
 
 ## P2 — Next-phase development plan (G10)
 
-- [ ] Copy [`NEXT-PHASE-PLAN.md`](NEXT-PHASE-PLAN.md) to
+- [x] Copy [`NEXT-PHASE-PLAN.md`](NEXT-PHASE-PLAN.md) to
       `docs/NEXT-PHASE-PLAN.md` and fill every section.
-- [ ] Define 3–5 measurable outcomes tied to a named stakeholder.
-- [ ] Prioritise with a stated method (RICE or your own) and show the trade-offs.
-- [ ] Three milestones with testable exit criteria, working back from bank go-live.
-- [ ] Be honest about capacity; name the next two hires and why.
-- [ ] List what you are explicitly deferring, with reasons.
+- [x] Define 3–5 measurable outcomes tied to a named stakeholder.
+- [x] Prioritise with a stated method (RICE or your own) and show the trade-offs.
+- [x] Three milestones with testable exit criteria, working back from bank go-live.
+- [x] Be honest about capacity; name the next two hires and why.
+- [x] List what you are explicitly deferring, with reasons.
 
 ## P3 — Bonus (Cloudflare + TLD)
 
@@ -94,6 +104,8 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] Cache rules: assets cached, API bypassed.
 - [ ] Evidence committed (`dig`, `curl -I`, WAF event screenshot).
 
+> _Not attempted._ Requires a real TLD and a Cloudflare account.
+
 ## P3 — Extra credit
 
 - [ ] Multi-currency: reports must not sum across currencies silently. Group by
@@ -102,6 +114,9 @@ Legend: **P0** blocks everything · **P1** core · **P2** required for full mark
 - [ ] CSV or PDF export for the trial balance.
 - [ ] OpenAPI spec generated from the route schemas.
 - [ ] A load test (`k6`/`autocannon`) with results committed.
+
+> _Not attempted._ These are stretch goals; the correctness and security work was
+> prioritised instead (see `docs/SUBMISSION.md`).
 
 ---
 

@@ -2,7 +2,8 @@
 import { defineConfig } from "vitest/config";
 
 /**
- * The challenge suite is RED on purpose. See docs/TASKS.md.
+ * The challenge specs define the required fixes (see docs/TASKS.md). They run
+ * outside the default suite; keep them green by fixing production source only.
  * Run with: pnpm --filter @ledgerlab/ledger-api test:challenges
  */
 export default defineConfig({

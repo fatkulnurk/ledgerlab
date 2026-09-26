@@ -1,10 +1,10 @@
-import { SEED_ACCOUNTS, buildSeedEntries } from "@ledgerlab/shared";
 import { createDatabase } from "./client";
 import { PostgresLedgerRepository } from "./postgres-repository";
+import { runSeed } from "./seed";
 
 /**
  * Seed a Postgres database with the demo chart of accounts and journal entries.
- * Skips accounts that already exist, so it is safe to re-run.
+ * Idempotent: running it repeatedly never duplicates data.
  */
 async function main(): Promise<void> {
   const url = process.env.DATABASE_URL;
@@ -12,24 +12,11 @@ async function main(): Promise<void> {
   const { db, close } = createDatabase(url, { max: 1 });
   const repo = new PostgresLedgerRepository(db);
   try {
-    const existing = new Set((await repo.listAccounts()).map((a) => a.code));
-    for (const account of SEED_ACCOUNTS) {
-      if (!existing.has(account.code)) await repo.createAccount(account);
-    }
-    const accountsByCode = new Map((await repo.listAccounts()).map((a) => [a.code, a]));
-    for (const entry of buildSeedEntries()) {
-      await repo.createJournalEntry({
-        date: entry.date,
-        memo: entry.memo,
-        reference: entry.reference,
-        lines: entry.lines.map((line) => {
-          const account = accountsByCode.get(line.accountCode);
-          if (!account) throw new Error(`Seed account ${line.accountCode} missing`);
-          return { accountId: account.id, amountMinor: line.amountMinor, memo: line.memo };
-        }),
-      });
-    }
-    console.log(`Seeded ${accountsByCode.size} accounts and ${buildSeedEntries().length} entries.`);
+    const result = await runSeed(repo);
+    console.log(
+      `Seed complete: ${result.accountsCreated} accounts created, ${result.entriesCreated} entries created ` +
+        `(${result.accountCount} accounts, ${result.entryCount} entries total).`,
+    );
   } finally {
     await close();
   }

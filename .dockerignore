@@ -1,0 +1,35 @@
+# Keep the Docker build context small and reproducible.
+# Anything here is excluded from `docker build`.
+
+# Dependencies are installed inside the image, never copied from the host.
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build output and caches.
+**/dist
+**/build
+**/.turbo
+**/*.tsbuildinfo
+
+# Version control and editor noise.
+.git
+.gitignore
+.github
+.vscode
+.idea
+.DS_Store
+
+# Secrets and local-only files.
+.env
+.env.*
+!.env.example
+
+# Docs, planning artefacts, and test output.
+docs
+deployment/aws
+deployment/gcp
+deployment/azure
+deployment/cloudflare
+coverage
+**/*.log

@@ -20,6 +20,24 @@ export const NORMAL_BALANCE: Record<AccountType, "DEBIT" | "CREDIT"> = {
   REVENUE: "CREDIT",
 };
 
+/**
+ * An ISO date string (YYYY-MM-DD) that must also be a real calendar date, so
+ * impossible values like "2026-06-31" are rejected instead of silently rolling
+ * over. Used for entry dates and report boundaries.
+ */
+export const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "must be YYYY-MM-DD")
+  .refine((value) => {
+    const parsed = new Date(`${value}T00:00:00Z`);
+    return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+  }, "must be a real calendar date (YYYY-MM-DD)");
+
+/** True when `value` is a real ISO calendar date. */
+export function isIsoDate(value: string): boolean {
+  return isoDateSchema.safeParse(value).success;
+}
+
 /** A monetary amount is ALWAYS an integer number of minor units (cents). */
 export const accountSchema = z.object({
   id: z.string().min(1),
@@ -63,7 +81,7 @@ export type EntryStatus = (typeof ENTRY_STATUSES)[number];
 export const journalEntrySchema = z.object({
   id: z.string().min(1),
   /** ISO date (YYYY-MM-DD) the entry affects. */
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "date must be YYYY-MM-DD"),
+  date: isoDateSchema,
   memo: z.string().min(1).max(280),
   reference: z.string().max(64).optional(),
   status: z.enum(ENTRY_STATUSES),
@@ -74,7 +92,7 @@ export type JournalEntry = z.infer<typeof journalEntrySchema>;
 
 /** Shape accepted by POST /api/journal-entries (server assigns ids/timestamps). */
 export const createJournalEntrySchema = z.object({
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "date must be YYYY-MM-DD"),
+  date: isoDateSchema,
   memo: z.string().min(1).max(280),
   reference: z.string().max(64).optional(),
   lines: z
@@ -96,6 +114,11 @@ export const createAccountSchema = z.object({
   currency: z.string().length(3).default("USD"),
 });
 export type CreateAccountInput = z.infer<typeof createAccountSchema>;
+
+export const updateAccountActiveSchema = z.object({
+  isActive: z.boolean(),
+});
+export type UpdateAccountActiveInput = z.infer<typeof updateAccountActiveSchema>;
 
 export interface TrialBalanceRow {
   accountId: string;

@@ -1,5 +1,18 @@
 import { useState } from "react";
-import { Badge, Card, Field, Input, PageHeader, TBody, TD, TH, THead, TR, TableWrap } from "@ledgerlab/ui";
+import {
+  Badge,
+  Card,
+  EmptyState,
+  Field,
+  Input,
+  PageHeader,
+  TBody,
+  TD,
+  TH,
+  THead,
+  TR,
+  TableWrap,
+} from "@ledgerlab/ui";
 import { Async } from "../components/states";
 import { api } from "../lib/api";
 import { useAsync } from "../lib/useAsync";
@@ -36,18 +49,16 @@ export function ReportsPage() {
         title="Balance sheet"
         description={`As of ${formatDate(asOf)}`}
         actions={
-          <Async
-            loading={balanceSheet.loading}
-            error={balanceSheet.error}
-            data={balanceSheet.data}
-            onRetry={balanceSheet.reload}
-          >
-            {(data) => (
-              <Badge tone={data.outOfBalanceMinor === 0 ? "positive" : "negative"}>
-                {data.outOfBalanceMinor === 0 ? "Balanced" : `Off by ${money(data.outOfBalanceMinor)}`}
-              </Badge>
-            )}
-          </Async>
+          balanceSheet.data ? (
+            <Badge
+              className="tabular-nums"
+              tone={balanceSheet.data.outOfBalanceMinor === 0 ? "positive" : "negative"}
+            >
+              {balanceSheet.data.outOfBalanceMinor === 0
+                ? "Balanced"
+                : `Off by ${money(balanceSheet.data.outOfBalanceMinor)}`}
+            </Badge>
+          ) : undefined
         }
         padded={false}
       >
@@ -56,9 +67,18 @@ export function ReportsPage() {
           error={balanceSheet.error}
           data={balanceSheet.data}
           onRetry={balanceSheet.reload}
+          isEmpty={(data) =>
+            data.totalAssetsMinor === 0 && data.totalLiabilitiesMinor === 0 && data.totalEquityMinor === 0
+          }
+          empty={
+            <EmptyState
+              title="No balances to report"
+              description="There are no posted entries on or before this date."
+            />
+          }
         >
           {(data) => (
-            <TableWrap>
+            <TableWrap label="Balance sheet">
               <THead>
                 <TR>
                   <TH className="w-24">Code</TH>
@@ -85,9 +105,21 @@ export function ReportsPage() {
       </Card>
 
       <Card title="Income statement" description={`${formatDate(from)} → ${formatDate(to)}`} padded={false}>
-        <Async loading={income.loading} error={income.error} data={income.data} onRetry={income.reload}>
+        <Async
+          loading={income.loading}
+          error={income.error}
+          data={income.data}
+          onRetry={income.reload}
+          isEmpty={(data) => data.revenue.length + data.expenses.length === 0}
+          empty={
+            <EmptyState
+              title="No revenue or expenses in this period"
+              description="Adjust the date range or post an entry to see an income statement."
+            />
+          }
+        >
           {(data) => (
-            <TableWrap>
+            <TableWrap label="Income statement">
               <THead>
                 <TR>
                   <TH>Line</TH>
@@ -126,9 +158,21 @@ export function ReportsPage() {
       </Card>
 
       <Card title="Trial balance" description={`As of ${formatDate(asOf)}`} padded={false}>
-        <Async loading={trial.loading} error={trial.error} data={trial.data} onRetry={trial.reload}>
+        <Async
+          loading={trial.loading}
+          error={trial.error}
+          data={trial.data}
+          onRetry={trial.reload}
+          isEmpty={(data) => data.rows.length === 0}
+          empty={
+            <EmptyState
+              title="No activity yet"
+              description="There are no posted entries on or before this date."
+            />
+          }
+        >
           {(data) => (
-            <TableWrap>
+            <TableWrap label="Trial balance">
               <THead>
                 <TR>
                   <TH className="w-24">Code</TH>

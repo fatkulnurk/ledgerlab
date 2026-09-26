@@ -1,15 +1,14 @@
 import { z } from "zod";
 import { Hono } from "hono";
-import { ValidationError } from "@ledgerlab/shared";
+import { ValidationError, isoDateSchema } from "@ledgerlab/shared";
 import type { ReportingService } from "../services/reporting-service";
 
 const today = () => new Date().toISOString().slice(0, 10);
-const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "must be YYYY-MM-DD");
 
-const asOfSchema = z.object({ asOf: isoDate.default(today) });
+const asOfSchema = z.object({ asOf: isoDateSchema.default(today) });
 const rangeSchema = z.object({
-  from: isoDate.default(() => `${today().slice(0, 7)}-01`),
-  to: isoDate.default(today),
+  from: isoDateSchema.default(() => `${today().slice(0, 7)}-01`),
+  to: isoDateSchema.default(today),
 });
 
 function parse<S extends z.ZodTypeAny>(schema: S, input: Record<string, string | undefined>): z.output<S> {

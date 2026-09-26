@@ -17,6 +17,11 @@
     "format:check": "prettier --check .",
     "ai:log": "node scripts/log-ai-prompt.mjs",
     "ai:verify": "node scripts/verify-ai-log.mjs",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @ledgerlab/db migrate:sql",
+    "db:seed": "pnpm --filter @ledgerlab/db seed",
+    "docker:build": "docker build -f deployment/Dockerfile.ledger-api -t ledgerlab/ledger-api . && docker build -f deployment/Dockerfile.reporting-api -t ledgerlab/reporting-api . && docker build -f deployment/Dockerfile.web -t ledgerlab/web .",
     "guide:pdf": "node scripts/build-guide.mjs",
     "guide:html": "node scripts/build-guide.mjs --html-only",
     "clean": "turbo run clean && rm -rf node_modules"

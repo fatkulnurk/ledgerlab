@@ -2,73 +2,95 @@
 # Deploy with: Render Dashboard -> New -> Blueprint -> point at this repo.
 #
 # This provisions:
-#   - PostgreSQL (managed)
-#   - ledger-api    (Docker, public)
+#   - PostgreSQL (managed, private network only)
+#   - ledger-api    (Docker, public; runs migrations as a pre-deploy step)
 #   - reporting-api (Docker, public; calls ledger-api over the private network)
 #   - web           (static SPA)
 #
-# After the first deploy, set the two `sync: false` values in the dashboard.
+# After the first deploy, set the `sync: false` values in the dashboard.
 
 databases:
-  - name: ledgerlab-db
+  - name: koiledgerlab-db
     databaseName: ledgerlab
     user: ledgerlab
     plan: basic-256mb
     postgresMajorVersion: "16"
+    # Must match the services' region: Render's private network is per-region.
+    region: singapore
+    # No public endpoint. Services in the same region still reach it over the
+    # internal URL.
+    ipAllowList: []
 
 services:
   # ---------------------------------------------------------------- ledger API
   - type: web
-    name: ledgerlab-ledger-api
+    name: koiledgerlab-ledger-api
     runtime: docker
     plan: starter
     region: singapore
+    numInstances: 2
     dockerfilePath: ./deployment/Dockerfile.ledger-api
     dockerContext: .
     healthCheckPath: /health
-    autoDeploy: true
-    disk: []
+    # Migrations run once per deploy, before the new version serves traffic.
+    # Never on container boot.
+    preDeployCommand: pnpm --filter @ledgerlab/db migrate:sql
+    autoDeployTrigger: commit
     envVars:
-      - key: LEDGER_API_PORT
+      # Render forwards traffic to $PORT; the app binds it on 0.0.0.0.
+      - key: PORT
         value: 4001
       - key: DATABASE_URL
         fromDatabase:
-          name: ledgerlab-db
+          name: koiledgerlab-db
           property: connectionString
+      - key: DB_POOL_MAX
+        value: 10
+      - key: DB_IDLE_TIMEOUT_SECONDS
+        value: 30
       - key: CORS_ORIGINS
-        sync: false # set to your dashboard origin, e.g. https://ledgerlab.example.com
+        sync: false # set to your dashboard origin, e.g. https://koiledgerlab-web.onrender.com
       - key: INTERNAL_API_TOKEN
         generateValue: true
+      - key: RATE_LIMIT_MAX
+        value: 120
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
 
   # ------------------------------------------------------------- reporting API
   - type: web
-    name: ledgerlab-reporting-api
+    name: koiledgerlab-reporting-api
     runtime: docker
     plan: starter
     region: singapore
+    numInstances: 2
     dockerfilePath: ./deployment/Dockerfile.reporting-api
     dockerContext: .
     healthCheckPath: /health
-    autoDeploy: true
+    autoDeployTrigger: commit
     envVars:
-      - key: REPORTING_API_PORT
+      - key: PORT
         value: 4002
       # Private-network URL; Render resolves service names inside the region.
       - key: LEDGER_API_URL
-        value: http://ledgerlab-ledger-api:4001
+        value: http://koiledgerlab-ledger-api:4001
       - key: INTERNAL_API_TOKEN
         fromService:
           type: web
-          name: ledgerlab-ledger-api
+          name: koiledgerlab-ledger-api
           envVarKey: INTERNAL_API_TOKEN
       - key: CORS_ORIGINS
         sync: false
+      - key: RATE_LIMIT_MAX
+        value: 120
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
 
   # --------------------------------------------------------------- dashboard
   - type: web
-    name: ledgerlab-web
+    name: koiledgerlab-web
     runtime: static
-    buildCommand: corepack enable && pnpm install && pnpm --filter @ledgerlab/web build
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @ledgerlab/web build
     staticPublishPath: ./apps/web/dist
     routes:
       - type: rewrite
@@ -76,13 +98,25 @@ services:
         destination: /index.html
     headers:
       - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains; preload
+      - path: /*
         name: X-Content-Type-Options
         value: nosniff
       - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      - path: /*
+        name: Content-Security-Policy
+        value: default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'
     envVars:
       - key: VITE_LEDGER_API_URL
-        sync: false # e.g. https://ledgerlab-ledger-api.onrender.com
+        sync: false # e.g. https://koiledgerlab-ledger-api.onrender.com
       - key: VITE_REPORTING_API_URL
-        sync: false # e.g. https://ledgerlab-reporting-api.onrender.com
+        sync: false # e.g. https://koiledgerlab-reporting-api.onrender.com

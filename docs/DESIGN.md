@@ -53,11 +53,11 @@ enforced; the `ui-unslop` sub-agent reviews against them.
 
 ## Checklist before you claim G2 done
 
-- [ ] Squint test: the page is not one blob of similar colour.
-- [ ] Exactly one accent colour in use.
-- [ ] No icon-in-rounded-square anywhere.
-- [ ] No gradient, no glass, no coloured shadow.
-- [ ] No card-in-card.
-- [ ] Money columns are tabular and right-aligned.
-- [ ] Keyboard focus is visible on every interactive element.
-- [ ] Loading / empty / error states exist on every data surface.
+- [x] Squint test: the page is not one blob of similar colour.
+- [x] Exactly one accent colour in use.
+- [x] No icon-in-rounded-square anywhere.
+- [x] No gradient, no glass, no coloured shadow.
+- [x] No card-in-card.
+- [x] Money columns are tabular and right-aligned.
+- [x] Keyboard focus is visible on every interactive element.
+- [x] Loading / empty / error states exist on every data surface.

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lte, sql } from "drizzle-orm";
 import type {
   Account,
   CreateAccountInput,
@@ -10,7 +10,14 @@ import type {
   Paginated,
   PostingRow,
 } from "@ledgerlab/shared";
-import { ConflictError, NotFoundError, createId, isBalanced, sumMinor } from "@ledgerlab/shared";
+import {
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+  createId,
+  isBalanced,
+  sumMinor,
+} from "@ledgerlab/shared";
 import { accounts, journalEntries, journalLines } from "./schema";
 import type { Database } from "./client";
 
@@ -80,6 +87,15 @@ export class PostgresLedgerRepository implements LedgerRepository {
     return toAccount(row);
   }
 
+  async setAccountActive(id: string, isActive: boolean): Promise<Account | undefined> {
+    const [row] = await this.db
+      .update(accounts)
+      .set({ isActive: isActive ? 1 : 0 })
+      .where(eq(accounts.id, id))
+      .returning();
+    return row ? toAccount(row) : undefined;
+  }
+
   private async linesFor(entryId: string): Promise<JournalLine[]> {
     const rows = await this.db
       .select({
@@ -104,7 +120,11 @@ export class PostgresLedgerRepository implements LedgerRepository {
   }
 
   async listJournalEntries(query: ListJournalEntriesQuery): Promise<Paginated<JournalEntry>> {
-    const where = query.status ? eq(journalEntries.status, query.status) : undefined;
+    const conditions = [];
+    if (query.status) conditions.push(eq(journalEntries.status, query.status));
+    if (query.from) conditions.push(gte(journalEntries.entryDate, query.from));
+    if (query.to) conditions.push(lte(journalEntries.entryDate, query.to));
+    const where = conditions.length > 0 ? and(...conditions) : undefined;
     const offset = (query.page - 1) * query.pageSize;
 
     const rows = await this.db
@@ -154,6 +174,9 @@ export class PostgresLedgerRepository implements LedgerRepository {
       for (const [position, line] of input.lines.entries()) {
         const account = await tx.select().from(accounts).where(eq(accounts.id, line.accountId)).limit(1);
         if (!account[0]) throw new NotFoundError(`Account ${line.accountId} not found`);
+        if (account[0].isActive !== 1) {
+          throw new ValidationError(`Account ${account[0].code} is inactive and cannot be posted to`);
+        }
         const lineId = createId("jl");
         lineIds.push(lineId);
         await tx.insert(journalLines).values({
@@ -173,10 +196,21 @@ export class PostgresLedgerRepository implements LedgerRepository {
   }
 
   async voidJournalEntry(id: string): Promise<JournalEntry | undefined> {
-    const existing = await this.getJournalEntry(id);
-    if (!existing) return undefined;
-    await this.db.update(journalEntries).set({ status: "VOID" }).where(eq(journalEntries.id, id));
-    return { ...existing, status: "VOID" };
+    const updated = await this.db
+      .update(journalEntries)
+      .set({ status: "VOID" })
+      .where(and(eq(journalEntries.id, id), eq(journalEntries.status, "POSTED")))
+      .returning({ id: journalEntries.id });
+
+    if (updated.length === 0) {
+      const existing = await this.getJournalEntry(id);
+      if (!existing) return undefined;
+      throw new ConflictError(`Journal entry ${id} is ${existing.status}; only POSTED entries can be voided`);
+    }
+
+    const entry = await this.getJournalEntry(id);
+    if (!entry) throw new Error("Failed to load voided journal entry");
+    return entry;
   }
 
   async listPostings(): Promise<PostingRow[]> {

@@ -18,8 +18,7 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
+        # Version comes from the "packageManager" field in package.json.
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -39,6 +38,10 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      # The two planted defects must stay fixed; this suite is red by design.
+      - name: Challenge suite
+        run: pnpm --filter @ledgerlab/ledger-api test:challenges
 
       - name: Build
         run: pnpm build

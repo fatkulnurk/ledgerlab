@@ -11,12 +11,13 @@ export interface FieldProps {
   htmlFor?: string;
   hint?: ReactNode;
   error?: string;
+  className?: string;
   children: ReactNode;
 }
 
-export function Field({ label, htmlFor, hint, error, children }: FieldProps) {
+export function Field({ label, htmlFor, hint, error, className, children }: FieldProps) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={cn("flex flex-col gap-1.5", className)}>
       <label htmlFor={htmlFor} className="text-sm font-medium text-zinc-700">
         {label}
       </label>

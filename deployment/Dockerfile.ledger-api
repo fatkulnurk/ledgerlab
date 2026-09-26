@@ -6,27 +6,40 @@ RUN corepack enable
 WORKDIR /app
 
 # Copy manifests first so dependency layers cache well.
-COPY pnpm-workspace.yaml package.json tsconfig.base.json turbo.json ./
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json turbo.json ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/db/package.json ./packages/db/
 COPY apps/ledger-api/package.json ./apps/ledger-api/
-RUN pnpm install --prod=false --ignore-scripts=false
+RUN pnpm install --frozen-lockfile --prod=false --ignore-scripts=false
 
 COPY packages ./packages
 COPY apps/ledger-api ./apps/ledger-api
 RUN pnpm --filter @ledgerlab/ledger-api build
 
+# Runner installs only production dependencies from the lockfile, so the image
+# carries no dev toolchain. tsup bundles the workspace packages into dist, so no
+# workspace sources are needed at runtime.
 FROM node:20-alpine AS runner
 RUN corepack enable
 WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=builder /app ./
-RUN pnpm prune --prod --ignore-scripts || true
+ENV NODE_ENV=production CI=true
+
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/db/package.json ./packages/db/
+COPY apps/ledger-api/package.json ./apps/ledger-api/
+RUN pnpm install --frozen-lockfile --prod --ignore-scripts
+
+COPY --from=builder /app/apps/ledger-api/dist ./apps/ledger-api/dist
+# Needed by the pre-deploy migration step (pnpm --filter @ledgerlab/db migrate:sql).
+COPY --from=builder /app/packages/db/migrate.mjs ./packages/db/migrate.mjs
+COPY --from=builder /app/packages/db/migrations ./packages/db/migrations
 
 # Run as a non-root user.
 USER node
-ENV LEDGER_API_PORT=4001 LEDGER_API_HOST=0.0.0.0
+# No port default here: the platform sets PORT and local dev sets LEDGER_API_PORT.
+ENV LEDGER_API_HOST=0.0.0.0
 EXPOSE 4001
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:'+(process.env.LEDGER_API_PORT||4001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.LEDGER_API_PORT||process.env.PORT||4001)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 CMD ["node", "apps/ledger-api/dist/index.js"]

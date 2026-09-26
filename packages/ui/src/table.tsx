@@ -1,9 +1,14 @@
 import type { HTMLAttributes, ReactNode, ThHTMLAttributes, TdHTMLAttributes } from "react";
 import { cn } from "./cn";
 
-export function TableWrap({ children }: { children: ReactNode }) {
+export function TableWrap({ children, label }: { children: ReactNode; label?: string }) {
   return (
-    <div className="overflow-x-auto">
+    <div
+      role={label ? "region" : undefined}
+      aria-label={label}
+      tabIndex={0}
+      className="overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+    >
       <table className="w-full border-collapse text-sm">{children}</table>
     </div>
   );

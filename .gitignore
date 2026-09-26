@@ -9,6 +9,9 @@ build/
 out/
 *.tsbuildinfo
 
+# turborepo cache / logs
+.turbo/
+
 # env
 .env
 .env.local
